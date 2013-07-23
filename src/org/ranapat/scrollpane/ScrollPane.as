@@ -101,12 +101,32 @@ package org.ranapat.scrollpane {
 			return -this._content.x;
 		}
 		
+		public function get scrollXPercents():uint {
+			var result:uint = this.scrollX / (this.totalWidth - this.width) * 100;
+			return result > 100? 100 : result;
+		}
+		
+		public function get visibilityXProportion():uint {
+			var result:uint = this.width / this.totalWidth * 100;
+			return result > 100? 100 : result;
+		}
+		
 		public function set scrollY(value:Number):void {
 			this._content.y = -value;
 		}
 		
 		public function get scrollY():Number {
 			return -this._content.y;
+		}
+		
+		public function get scrollYPercents():uint {
+			var result:uint = this.scrollY / (this.totalHeight - this.height) * 100;
+			return result > 100? 100 : result;
+		}
+		
+		public function get visibilityYProportion():uint {
+			var result:uint = this.height / this.totalHeight * 100;
+			return result > 100? 100 : result;
 		}
 		
 		public function scrollXTo(value:Number, ease:Function = null, duration:Number = Number.NaN, easeParams:Array = null):void {
@@ -266,13 +286,12 @@ package org.ranapat.scrollpane {
 			return this._content.getChildAt(length - 1);
 		}
 		
+		private function get totalWidth():Number {
+			return this._content.width;
+		}
+		
 		private function get totalHeight():Number {
-			var total:Number = this.settings.paddingTop + this.settings.paddingBottom;
-			var length:uint = this._content.numChildren;
-			for (var i:uint = 0; i < length; ++i) {
-				total += this._content.getChildAt(i).height;
-			}
-			return total;
+			return this._content.height;
 		}
 		
 		private function isItemPartiallyVisibile(item:DisplayObject):Boolean {
@@ -361,6 +380,8 @@ package org.ranapat.scrollpane {
 		
 		private function handleTweenComplete():void {
 			this._offsetToApply = null;
+			
+			trace("........ " + scrollYPercents + " .. " + scrollXPercents + " .. " + visibilityYProportion)
 		}
 		
 		private function handleAddedToStage(e:Event):void {
@@ -465,8 +486,6 @@ package org.ranapat.scrollpane {
 				
 				this._latestMouseDownPoint = new Point(e.localX, e.localY);
 				
-				this.scrollY += deltaY;
-				
 				if (!this.settings.scrollLockX) {
 					this.scrollX += deltaX;
 					if (deltaX > 0) {
@@ -475,10 +494,13 @@ package org.ranapat.scrollpane {
 						this._scrollDirectionX = ScrollPaneConstants.DIRECTION_RIGHT;
 					}
 				}
-				if (deltaY > 0) {
-					this._scrollDirectionY = ScrollPaneConstants.DIRECTION_UP;
-				} else {
-					this._scrollDirectionY = ScrollPaneConstants.DIRECTION_DOWN;
+				if (!this.settings.scrollLockY) {
+					this.scrollY += deltaY;
+					if (deltaY > 0) {
+						this._scrollDirectionY = ScrollPaneConstants.DIRECTION_UP;
+					} else {
+						this._scrollDirectionY = ScrollPaneConstants.DIRECTION_DOWN;
+					}
 				}
 			}
 		}

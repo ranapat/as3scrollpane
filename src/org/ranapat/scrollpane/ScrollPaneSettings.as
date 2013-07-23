@@ -14,6 +14,7 @@ package org.ranapat.scrollpane {
 		
 		public static var QUEUE_TWEENS:Boolean = true;
 		public static var SCROLL_LOCK_X:Boolean = true;
+		public static var SCROLL_LOCK_Y:Boolean = false;
 		public static var SCROLL_SNAP_TO_ITEMS:Boolean = true;
 		
 		public var paddingTop:Number;
@@ -29,6 +30,7 @@ package org.ranapat.scrollpane {
 		
 		public var queueTweens:Boolean;
 		public var scrollLockX:Boolean = true;
+		public var scrollLockY:Boolean = true;
 		public var scrollSnapToItems:Boolean = true;
 		
 		public function ScrollPaneSettings() {
@@ -45,6 +47,7 @@ package org.ranapat.scrollpane {
 			
 			this.queueTweens = ScrollPaneSettings.QUEUE_TWEENS;
 			this.scrollLockX = ScrollPaneSettings.SCROLL_LOCK_X;
+			this.scrollLockY = ScrollPaneSettings.SCROLL_LOCK_Y;
 			this.scrollSnapToItems = ScrollPaneSettings.SCROLL_SNAP_TO_ITEMS;
 		}
 	}

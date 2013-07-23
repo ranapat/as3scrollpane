@@ -88,7 +88,7 @@ package org.ranapat.scrollpane.examples {
 			addChild(scrollPane);
 			
 			var something:Vector.<Sprite> = new Vector.<Sprite>();
-			for (var i:uint = 0; i < 20; ++i) {
+			for (var i:uint = 0; i < 1; ++i) {
 				var s:Sprite = new Sprite();
 					
 				s.graphics.beginFill(Math.random() * 0xffffff, 1);
@@ -104,7 +104,7 @@ package org.ranapat.scrollpane.examples {
 				//s.x = 10;
 				//s.y = 10 + i * 70;
 				s.width = 700 - 20;
-				s.height = 50 + Math.random() * 100;
+				s.height = 20 + Math.random() * 100;
 				
 				/*
 				var tt:TextField = new TextField();
@@ -114,7 +114,7 @@ package org.ranapat.scrollpane.examples {
 				s.addChild(tt);
 				*/
 				
-				scrollPane.appendChild(s);
+				scrollPane.appendChild(s, ScrollPaneConstants.APPEND_MODE_COLUMN);
 				
 				something.push(s);
 			}
@@ -124,7 +124,7 @@ package org.ranapat.scrollpane.examples {
 			//scrollPane.scrollYTo(420);
 			
 			//scrollPane.focus(something[10], Elastic.easeInOut);
-			scrollPane.snap(something[19], ScrollPaneConstants.SNAP_TO_BOTTOM, Elastic.easeInOut);
+			//scrollPane.snap(something[19], ScrollPaneConstants.SNAP_TO_BOTTOM, Elastic.easeInOut);
 			
 			//scrollPane.scroll(-1);
 			//scrollPane.scrollY = 425;
