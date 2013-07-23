@@ -182,6 +182,8 @@ package org.ranapat.scrollpane {
 				} else if (mode == ScrollPaneConstants.SNAP_TO_BOTTOM) {
 					destinationX = item.x - this.settings.paddingLeft;
 					destinationY = this.height - item.y - item.height - this.settings.paddingTop;
+				} else {
+					throw new Error("No more modes are implemented so far! Sorry :(");
 				}
 				
 				if (!isNaN(destinationX) && !isNaN(destinationY)) {
