@@ -4,7 +4,11 @@ package org.ranapat.scrollpane.examples {
 	import flash.display.MovieClip;
 	import flash.display.Sprite;
 	import flash.events.Event;
+	import flash.events.MouseEvent;
+	import flash.text.TextField;
 	import org.ranapat.scrollpane.ScrollPane;
+	import org.ranapat.scrollpane.ScrollPaneConstants;
+	import org.ranapat.scrollpane.ScrollPaneSettings;
 	
 	public class Main extends Sprite {
 		
@@ -84,7 +88,7 @@ package org.ranapat.scrollpane.examples {
 			addChild(scrollPane);
 			
 			var something:Vector.<Sprite> = new Vector.<Sprite>();
-			for (var i:uint = 0; i < 10; ++i) {
+			for (var i:uint = 0; i < 1; ++i) {
 				var s:Sprite = new Sprite();
 					
 				s.graphics.beginFill(Math.random() * 0xffffff, 1);
@@ -93,19 +97,37 @@ package org.ranapat.scrollpane.examples {
 				
 				
 				
+				s.addEventListener(MouseEvent.CLICK, function (e:MouseEvent):void {
+					trace("we are here " + e.target.name)
+				});
+				
 				//s.x = 10;
 				//s.y = 10 + i * 70;
 				s.width = 700 - 20;
-				s.height = 50;
+				s.height = 50 + Math.random() * 100;
+				
+				/*
+				var tt:TextField = new TextField();
+				tt.text = "sprite " + i;
+				tt.width = s.width;
+				tt.height = s.height;
+				s.addChild(tt);
+				*/
 				
 				scrollPane.appendChild(s);
 				
 				something.push(s);
 			}
 			//scrollPane.scrollX = -425;
-			//scrollPane.scrollY = 425;
+			//scrollPane.scrollY = 140;
 			
-			scrollPane.focus(something[9], 3, Elastic.easeInOut);
+			//scrollPane.scrollYTo(420);
+			
+			//scrollPane.focus(something[10], Elastic.easeInOut);
+			//scrollPane.snap(something[10], ScrollPaneConstants.SNAP_TO_TOP);
+			
+			//scrollPane.scroll(-1);
+			//scrollPane.scrollY = 425;
 		}
 	}
 	
