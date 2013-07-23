@@ -6,6 +6,8 @@ package org.ranapat.scrollpane.examples {
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.text.TextField;
+	import org.ranapat.scrollpane.ScrollBar;
+	import org.ranapat.scrollpane.ScrollBarConstants;
 	import org.ranapat.scrollpane.ScrollPane;
 	import org.ranapat.scrollpane.ScrollPaneConstants;
 	import org.ranapat.scrollpane.ScrollPaneSettings;
@@ -88,14 +90,12 @@ package org.ranapat.scrollpane.examples {
 			addChild(scrollPane);
 			
 			var something:Vector.<Sprite> = new Vector.<Sprite>();
-			for (var i:uint = 0; i < 1; ++i) {
+			for (var i:uint = 0; i < 20; ++i) {
 				var s:Sprite = new Sprite();
 					
 				s.graphics.beginFill(Math.random() * 0xffffff, 1);
 				s.graphics.drawRect(0, 0, 300 - 20, 50);
 				s.graphics.endFill();
-				
-				
 				
 				s.addEventListener(MouseEvent.CLICK, function (e:MouseEvent):void {
 					trace("we are here " + e.target.name)
@@ -114,7 +114,7 @@ package org.ranapat.scrollpane.examples {
 				s.addChild(tt);
 				*/
 				
-				scrollPane.appendChild(s, ScrollPaneConstants.APPEND_MODE_COLUMN);
+				scrollPane.appendChild(s);
 				
 				something.push(s);
 			}
@@ -128,6 +128,24 @@ package org.ranapat.scrollpane.examples {
 			
 			//scrollPane.scroll(-1);
 			//scrollPane.scrollY = 425;
+			
+			var scroll:ScrollBar = new ScrollBar(ScrollBarConstants.MODE_VERTICAL);
+			//var scroll:ScrollBar = new ScrollBar(ScrollBarConstants.MODE_HORIZONTAL);
+			
+			scroll.x = 30;
+			scroll.y = 30;
+			scroll.width = 10;
+			scroll.height = 400;
+			/*
+			scroll.width = 400;
+			scroll.height = 10;
+			*/
+			addChild(scroll)
+			
+			scroll.offset = scrollPane.scrollYPercents;
+			scroll.percents = scrollPane.visibilityYProportion;
+			
+			scrollPane.addScrollBar(scroll);
 		}
 	}
 	

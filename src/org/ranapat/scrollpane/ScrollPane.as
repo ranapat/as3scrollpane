@@ -25,12 +25,18 @@ package org.ranapat.scrollpane {
 		private var _scrollDirectionY:uint;
 		private var _latestMouseUpTarget:Object;
 		
+		private var _scrollbars:Vector.<ScrollBar>;
+		
+		private var mode:uint;
+		
 		public var settings:ScrollPaneSettings;
 		
-		public function ScrollPane(_settings:ScrollPaneSettings = null) {
+		public function ScrollPane(_mode:uint = ScrollPaneConstants.APPEND_MODE_COLUMN, _settings:ScrollPaneSettings = null) {
 			super();
 			
+			this.mode = _mode;
 			this.settings = _settings? _settings : new ScrollPaneSettings();
+			this._scrollbars = new Vector.<ScrollBar>();
 			
 			this._background = new Sprite();
 			this._content = new Sprite();
@@ -63,21 +69,23 @@ package org.ranapat.scrollpane {
 		override public function addChild(item:DisplayObject):DisplayObject {
 			this._content.addChild(item);
 			
+			this.updateScrollBars();
+			
 			return item;
 		}
 		
-		public function appendChild(item:DisplayObject, mode:uint = ScrollPaneConstants.APPEND_MODE_COLUMN):DisplayObject {
+		public function appendChild(item:DisplayObject):DisplayObject {
 			if (this._content.numChildren == 0) {
 				item.x = this.settings.paddingLeft;
 				item.y = this.settings.paddingTop;
 			} else {
 				var prevItem:DisplayObject;
 				
-				if (mode == ScrollPaneConstants.APPEND_MODE_COLUMN) {
+				if (this.mode == ScrollPaneConstants.APPEND_MODE_COLUMN) {
 					prevItem = this._content.getChildAt(this._content.numChildren - 1);
 					item.x = this.settings.paddingLeft;
 					item.y = prevItem.y + prevItem.height + this.settings.ySpaceBetweenItems;
-				} else if (mode == ScrollPaneConstants.APPEND_MODE_ROW) {
+				} else if (this.mode == ScrollPaneConstants.APPEND_MODE_ROW) {
 					prevItem = this._content.getChildAt(this._content.numChildren - 1);
 					item.y = this.settings.paddingTop;
 					item.x = prevItem.x + prevItem.width + this.settings.xSpaceBetweenItems;
@@ -101,9 +109,13 @@ package org.ranapat.scrollpane {
 			return -this._content.x;
 		}
 		
+		public function set scrollXPercents(value:uint):void {
+			this.scrollX = value * (this.totalWidth - this.width) / 100;
+		}
+		
 		public function get scrollXPercents():uint {
 			var result:uint = this.scrollX / (this.totalWidth - this.width) * 100;
-			return result > 100? 100 : result;
+			return scrollX < 0? 0 : result > 100? 100 : result;
 		}
 		
 		public function get visibilityXProportion():uint {
@@ -119,9 +131,13 @@ package org.ranapat.scrollpane {
 			return -this._content.y;
 		}
 		
+		public function set scrollYPercents(value:uint):void {
+			this.scrollY = value * (this.totalHeight - this.height) / 100;
+		}
+		
 		public function get scrollYPercents():uint {
 			var result:uint = this.scrollY / (this.totalHeight - this.height) * 100;
-			return result > 100? 100 : result;
+			return this.scrollY < 0? 0 : result > 100? 100 : result;
 		}
 		
 		public function get visibilityYProportion():uint {
@@ -238,6 +254,42 @@ package org.ranapat.scrollpane {
 			}
 			
 			this.focus(this._content.getChildAt(scrollTo), ease, duration, easeParams);
+		}
+		
+		public function invalidate(scrollDirectionX:uint = ScrollPaneConstants.DIRECTION_NONE, scrollDirectionY:uint = ScrollPaneConstants.DIRECTION_NONE):void {
+			this._scrollDirectionX = scrollDirectionX;
+			this._scrollDirectionY = scrollDirectionY;
+			
+			this.revalidateList();
+		}
+		
+		public function addScrollBar(scrollBar:ScrollBar):void {
+			this._scrollbars.push(scrollBar);
+			
+			scrollBar.scrollPane = this;
+		}
+		
+		public function removeScrollBar(scrollBar:ScrollBar):void {
+			this._scrollbars.splice(this._scrollbars.indexOf(scrollBar), 1);
+			
+			scrollBar.scrollPane = null;
+		}
+		
+		private function updateScrollBars():void {
+			var length:uint = this._scrollbars.length;
+			var scrollBar:ScrollBar;
+			for (var i:uint = 0; i < length; ++i) {
+				scrollBar = this._scrollbars[i];
+				
+				if (this.mode == ScrollPaneConstants.APPEND_MODE_COLUMN) {
+					scrollBar.offset = this.scrollYPercents;
+					scrollBar.percents = this.visibilityYProportion;
+				} else if (this.mode == ScrollPaneConstants.APPEND_MODE_ROW) {
+					scrollBar.offset = this.scrollXPercents;
+					scrollBar.percents = this.visibilityXProportion;
+				}
+				
+			}
 		}
 		
 		private function get firstPartiallyVisibleItem():DisplayObject {
@@ -378,10 +430,39 @@ package org.ranapat.scrollpane {
 			return null;
 		}
 		
+		private function revalidateList():void {
+			var item:DisplayObject;
+			var snapTo:uint;
+			if (this.totalHeight > this.height && this._content.numChildren > 1 && this.settings.scrollSnapToItems) {
+				if (this._scrollDirectionY == ScrollPaneConstants.DIRECTION_DOWN) {
+					item = this.firstPartiallyVisibleItem;
+					snapTo = ScrollPaneConstants.SNAP_TO_TOP;
+				} else if (this._scrollDirectionY == ScrollPaneConstants.DIRECTION_UP) {
+					item = this.latestPartiallyVisibleItem;
+					snapTo = ScrollPaneConstants.SNAP_TO_BOTTOM;
+				} else {
+					snapTo = ScrollPaneConstants.SNAP_TO_BOTTOM;
+				}
+			} else {
+				if (this._content.y > 0) {
+					item = this.firstPartiallyVisibleItem;
+					snapTo = ScrollPaneConstants.SNAP_TO_TOP;
+				} else if (this._content.y + this.totalHeight < this.height && this.totalHeight > this.height){
+					item = this.latestPartiallyVisibleItem;
+					snapTo = ScrollPaneConstants.SNAP_TO_BOTTOM;
+				} else if (this._content.y + this.totalHeight < this.height && this.totalHeight <= this.height) {
+					item = this.latestPartiallyVisibleItem;
+					snapTo = ScrollPaneConstants.SNAP_TO_TOP;
+				}
+			}
+			
+			if (item) {
+				this.snap(item, snapTo, null, this.settings.scrollAutoFocusTweenDuration);
+			}			
+		}
+		
 		private function handleTweenComplete():void {
 			this._offsetToApply = null;
-			
-			trace("........ " + scrollYPercents + " .. " + scrollXPercents + " .. " + visibilityYProportion)
 		}
 		
 		private function handleAddedToStage(e:Event):void {
@@ -406,7 +487,6 @@ package org.ranapat.scrollpane {
 			this._control.y = 0;
 			
 			this._content.mask = this._mask;
-			//this._mask.visible = false;
 			
 			this.updateSize();
 			
@@ -432,34 +512,7 @@ package org.ranapat.scrollpane {
 		
 		private function handleControlMouseUp(e:MouseEvent):void {
 			if (this._mouseDownMode) {
-				var item:DisplayObject;
-				var snapTo:uint;
-				if (this.totalHeight > this.height && this._content.numChildren > 1 && this.settings.scrollSnapToItems) {
-					if (this._scrollDirectionY == ScrollPaneConstants.DIRECTION_DOWN) {
-						item = this.firstPartiallyVisibleItem;
-						snapTo = ScrollPaneConstants.SNAP_TO_TOP;
-					} else if (this._scrollDirectionY == ScrollPaneConstants.DIRECTION_UP) {
-						item = this.latestPartiallyVisibleItem;
-						snapTo = ScrollPaneConstants.SNAP_TO_BOTTOM;
-					} else {
-						snapTo = ScrollPaneConstants.SNAP_TO_BOTTOM;
-					}
-				} else {
-					if (this._content.y > 0) {
-						item = this.firstPartiallyVisibleItem;
-						snapTo = ScrollPaneConstants.SNAP_TO_TOP;
-					} else if (this._content.y + this.totalHeight < this.height && this.totalHeight > this.height){
-						item = this.latestPartiallyVisibleItem;
-						snapTo = ScrollPaneConstants.SNAP_TO_BOTTOM;
-					} else if (this._content.y + this.totalHeight < this.height && this.totalHeight <= this.height) {
-						item = this.latestPartiallyVisibleItem;
-						snapTo = ScrollPaneConstants.SNAP_TO_TOP;
-					}
-				}
-				
-				if (item) {
-					this.snap(item, snapTo, null, this.settings.scrollAutoFocusTweenDuration);
-				}
+				this.revalidateList();
 				
 				if (this._mouseMovedMode) {
 					this._latestMouseUpTarget = e.target;
@@ -469,6 +522,8 @@ package org.ranapat.scrollpane {
 			} else {
 				this._latestMouseUpTarget = null;
 			}
+			
+			this.updateScrollBars();
 			
 			this._mouseDownMode = false;
 			this._mouseMovedMode = false;
@@ -502,6 +557,8 @@ package org.ranapat.scrollpane {
 						this._scrollDirectionY = ScrollPaneConstants.DIRECTION_DOWN;
 					}
 				}
+				
+				this.updateScrollBars();
 			}
 		}
 		
