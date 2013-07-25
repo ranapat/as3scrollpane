@@ -56,9 +56,15 @@ package org.ranapat.scrollpane {
 		}
 		
 		public function set percents(value:Number):void {
+			var toRedraw:Boolean;
+			if (this._percents != value) {
+				toRedraw = true;
+			}
 			this._percents = value;
 			
-			this.redraw();
+			if (toRedraw) {
+				this.redraw();
+			}
 		}
 		
 		public function get percents():Number {

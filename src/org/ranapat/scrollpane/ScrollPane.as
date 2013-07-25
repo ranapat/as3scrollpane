@@ -65,6 +65,15 @@ package org.ranapat.scrollpane {
 		override public function get height():Number {
 			return this._height;
 		}
+		override public function removeChild(item:DisplayObject):DisplayObject {
+			this._content.removeChild(item);
+
+			this.scrollX = 0;
+			this.scrollY = 0;
+			this.updateScrollBars();
+
+			return item;
+		}
 		
 		override public function addChild(item:DisplayObject):DisplayObject {
 			this._content.addChild(item);
@@ -146,7 +155,7 @@ package org.ranapat.scrollpane {
 		}
 		
 		public function scrollXTo(value:Number, ease:Function = null, duration:Number = Number.NaN, easeParams:Array = null):void {
-			this.ensureOffsetToApply(value, Number.NaN);
+			this.ensureOffsetToApply(this._content.x + value, Number.NaN);
 			TweenLite.to(
 				this._content,
 				!isNaN(duration)? duration : this.settings.defaultTweenDuration,
@@ -160,7 +169,7 @@ package org.ranapat.scrollpane {
 		}
 		
 		public function scrollYTo(value:Number, ease:Function = null, duration:Number = Number.NaN, easeParams:Array = null):void {
-			this.ensureOffsetToApply(Number.NaN, value);
+			this.ensureOffsetToApply(Number.NaN, this._content.y + value);
 			TweenLite.to(
 				this._content,
 				!isNaN(duration)? duration : this.settings.defaultTweenDuration,
@@ -191,14 +200,14 @@ package org.ranapat.scrollpane {
 						deltaY = this.height - item.y - item.height - this._content.y - this.settings.paddingBottom;
 					}
 					
-					this.ensureOffsetToApply(deltaX, deltaY);
+					this.ensureOffsetToApply(this._content.x + deltaX, this._content.y + deltaY);
 					TweenLite.to(
 						this._content,
 						!isNaN(duration)? duration : this.settings.defaultTweenDuration,
 						{
 							x: this._content.x + deltaX,
 							y: this._content.y + deltaY,
-							ease: ease != null? ease : Linear.easeNone,
+							ease: ease != null? ease : settings.defaultTweenEase,
 							easeParams: easeParams,
 							onComplete: this.handleTweenComplete
 						}
@@ -275,6 +284,9 @@ package org.ranapat.scrollpane {
 			scrollBar.scrollPane = null;
 		}
 		
+		override public function get numChildren():int {
+			return this._content.numChildren;
+		}
 		private function updateScrollBars():void {
 			var length:uint = this._scrollbars.length;
 			var scrollBar:ScrollBar;
@@ -322,7 +334,7 @@ package org.ranapat.scrollpane {
 					return this._content.getChildAt(i - 1);
 				}
 			}
-			return this._content.getChildAt(length - 1);
+			return length > 0? this._content.getChildAt(length - 1) : null;
 		}
 		
 		private function get latestFullyVisibleItem():DisplayObject {
@@ -335,7 +347,7 @@ package org.ranapat.scrollpane {
 					return this._content.getChildAt(i - 1);
 				}
 			}
-			return this._content.getChildAt(length - 1);
+			return length > 0? this._content.getChildAt(length - 1) : null;
 		}
 		
 		private function get totalWidth():Number {
@@ -396,10 +408,11 @@ package org.ranapat.scrollpane {
 		}
 		
 		private function ensureOffsetToApply(x:Number = Number.NaN, y:Number = Number.NaN):void {
-			if (this._offsetToApply) {
-				if (this.settings.queueTweens) {
-					if (!isNaN(this._offsetToApply.x)) {
-						this._content.x = this._offsetToApply.x;
+			if (_offsetToApply) {
+				TweenLite.killTweensOf(this._content);
+				if (settings.queueTweens) {
+					if (!isNaN(_offsetToApply.x)) {
+						_content.x = _offsetToApply.x;
 					}
 					if (!isNaN(this._offsetToApply.y)) {
 						this._content.y = this._offsetToApply.y;
@@ -457,12 +470,13 @@ package org.ranapat.scrollpane {
 			}
 			
 			if (item) {
-				this.snap(item, snapTo, null, this.settings.scrollAutoFocusTweenDuration);
+				this.snap(item, snapTo, this.settings.scrollAutoFocusTweenEase, this.settings.scrollAutoFocusTweenDuration);
 			}			
 		}
 		
 		private function handleTweenComplete():void {
 			this._offsetToApply = null;
+			this.updateScrollBars();
 		}
 		
 		private function handleAddedToStage(e:Event):void {
@@ -508,6 +522,8 @@ package org.ranapat.scrollpane {
 		private function handleControlMouseDown(e:MouseEvent):void {
 			this._mouseDownMode = true;
 			this._latestMouseDownPoint = new Point(e.localX, e.localY);
+			TweenLite.killTweensOf(this._content);
+			this._offsetToApply = null;
 		}
 		
 		private function handleControlMouseUp(e:MouseEvent):void {
