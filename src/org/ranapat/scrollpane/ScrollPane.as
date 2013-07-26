@@ -464,7 +464,7 @@ package org.ranapat.scrollpane {
 					item = this.latestPartiallyVisibleItem;
 					snapTo = ScrollPaneConstants.SNAP_TO_BOTTOM;
 				} else if (this._content.y + this.totalHeight < this.height && this.totalHeight <= this.height) {
-					item = this.latestPartiallyVisibleItem;
+					item = this._content.numChildren > 0? this._content.getChildAt(0) : null
 					snapTo = ScrollPaneConstants.SNAP_TO_TOP;
 				}
 			}
