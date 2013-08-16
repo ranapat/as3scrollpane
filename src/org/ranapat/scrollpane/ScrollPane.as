@@ -295,6 +295,12 @@ package org.ranapat.scrollpane {
 			return this._content.numChildren;
 		}
 		
+		protected function redrawAssets():void {
+			this._background.graphics.beginFill(0xff0000, 1);
+			this._background.graphics.drawRect(0, 0, this.width, this.height);
+			this._background.graphics.endFill();
+		}
+		
 		private function updateScrollBars():void {
 			var length:uint = this._scrollbars.length;
 			var scrollBar:ScrollBar;
@@ -393,12 +399,10 @@ package org.ranapat.scrollpane {
 		
 		private function updateSize():void {
 			if (!isNaN(this.width) && !isNaN(this.height)) {
-				this._background.graphics.beginFill(0xff0000, 1);
-				this._background.graphics.drawRect(0, 0, this.width, this.height);
-				this._background.graphics.endFill();
+				this.redrawAssets();
 				
 				this._content.graphics.drawRect(0, 0, this.width, this.height);
-				
+			
 				this._mask.graphics.beginFill(0xffffff, 1);
 				this._mask.graphics.drawRect(0, 0, this.width, this.height);
 				this._mask.graphics.endFill();
