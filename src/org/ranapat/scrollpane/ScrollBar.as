@@ -71,6 +71,22 @@ package org.ranapat.scrollpane {
 			return this._percents;
 		}
 		
+		public function redraw():void {
+			if (
+				(this._mode == ScrollBarConstants.MODE_HORIZONTAL || this._mode == ScrollBarConstants.MODE_VERTICAL)
+				&& this._percents > 0 && this._percents <= 100
+				&& this._offset >= 0 && this._offset <= 100
+				&& !isNaN(this.width) && !isNaN(this.height)
+			) {
+				this.redrawAssets();
+				
+				super.width = this.width;
+				super.height = this.height;
+				
+				this.reposition();
+			}
+		}
+		
 		override public function set width(value:Number):void {
 			super.width = value;
 			
@@ -95,45 +111,33 @@ package org.ranapat.scrollpane {
 			return this._height;
 		}
 		
-		public function redraw():void {
-			if (
-				(this._mode == ScrollBarConstants.MODE_HORIZONTAL || this._mode == ScrollBarConstants.MODE_VERTICAL)
-				&& this._percents > 0 && this._percents <= 100
-				&& this._offset >= 0 && this._offset <= 100
-				&& !isNaN(this.width) && !isNaN(this.height)
-			) {
-				this.graphics.beginFill(0xffffff, 1);
-				this.graphics.drawRect(0, 0, this.width, this.height);
-				this.graphics.endFill();
-				
-				this._partA.graphics.beginFill(0x0000ff, .7);
-				this._partA.graphics.drawRect(0, 0, this.partAWidth, this.partAHeight);
-				this._partA.graphics.endFill();
-				this._partA.width = 10;
-				this._partA.height = 10;
-				
-				this._partB.graphics.beginFill(0xff0000, .7);
-				this._partB.graphics.drawRect(0, 0, this.partBWidth, this.partBHeight);
-				this._partB.graphics.endFill();
-				
-				this._partC.graphics.beginFill(0x00ff00, .7);
-				this._partC.graphics.drawRect(0, 0, this.partCWidth, this.partCHeight);
-				this._partC.graphics.endFill();
-				
-				this._partA.width = this.partAWidth;
-				this._partA.height = this.partAHeight;
-				
-				this._partB.width = this.partBWidth;
-				this._partB.height = this.partBHeight;
-				
-				this._partC.width = this.partCWidth;
-				this._partC.height = this.partCHeight;
-				
-				super.width = this.width;
-				super.height = this.height;
-				
-				this.reposition();
-			}
+		protected function redrawAssets():void {
+			this.graphics.beginFill(0xffffff, 1);
+			this.graphics.drawRect(0, 0, this.width, this.height);
+			this.graphics.endFill();
+			
+			this._partA.graphics.beginFill(0x0000ff, .7);
+			this._partA.graphics.drawRect(0, 0, this.partAWidth, this.partAHeight);
+			this._partA.graphics.endFill();
+			this._partA.width = 10;
+			this._partA.height = 10;
+			
+			this._partB.graphics.beginFill(0xff0000, .7);
+			this._partB.graphics.drawRect(0, 0, this.partBWidth, this.partBHeight);
+			this._partB.graphics.endFill();
+			
+			this._partC.graphics.beginFill(0x00ff00, .7);
+			this._partC.graphics.drawRect(0, 0, this.partCWidth, this.partCHeight);
+			this._partC.graphics.endFill();
+			
+			this._partA.width = this.partAWidth;
+			this._partA.height = this.partAHeight;
+			
+			this._partB.width = this.partBWidth;
+			this._partB.height = this.partBHeight;
+			
+			this._partC.width = this.partCWidth;
+			this._partC.height = this.partCHeight;			
 		}
 		
 		private function reposition():void {

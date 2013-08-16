@@ -28,7 +28,7 @@ package org.ranapat.scrollpane {
 		public static var DRAG_SCROLL_AUTO:Boolean = true;
 		
 		public static var POST_FORCE_MIN_DELTA:Number = 8;
-		public static var POST_FORCE_ONE_ITEM_SIZE:Number = 10;
+		public static var POST_FORCE_ONE_ITEM_SIZE:Number = 5;
 		
 		public var paddingTop:Number;
 		public var paddingRight:Number;
