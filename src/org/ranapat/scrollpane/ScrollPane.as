@@ -26,6 +26,8 @@ package org.ranapat.scrollpane {
 		private var _scrollDirectionX:uint;
 		private var _scrollDirectionY:uint;
 		private var _latestMouseUpTarget:Object;
+		private var _latestScrollDeltaX:Number;
+		private var _latestScrollDeltaY:Number;
 		
 		private var _scrollbars:Vector.<ScrollBar>;
 		
@@ -468,6 +470,34 @@ package org.ranapat.scrollpane {
 				} else if (this._content.y + this.totalHeight < this.height && this.totalHeight <= this.height) {
 					item = this._content.numChildren > 0? this._content.getChildAt(0) : null
 					snapTo = ScrollPaneConstants.SNAP_TO_TOP;
+				} else {
+					if (this._latestScrollDeltaY > 0) {
+						if (this._latestScrollDeltaY > this.settings.postForceMinDelta) {
+							var currentTop:DisplayObject = this.firstPartiallyVisibleItem;
+							var currentTopIndex:int = currentTop.parent.getChildIndex(currentTop);
+							
+							if (currentTopIndex > 0) {
+								currentTopIndex += int(this._latestScrollDeltaY / this.settings.postForceOneItemSize);
+								currentTopIndex = currentTopIndex < 0? 0 : currentTopIndex;
+							}
+							
+							item = currentTop.parent.getChildAt(currentTopIndex);
+							snapTo = ScrollPaneConstants.SNAP_TO_TOP;
+						}
+					} else {
+						if (this._latestScrollDeltaY < -this.settings.postForceMinDelta) {
+							var currentBottom:DisplayObject = this.latestPartiallyVisibleItem;
+							var currentBottomIndex:uint = currentBottom.parent.getChildIndex(currentBottom);
+							
+							if (currentBottomIndex < currentBottom.parent.numChildren) {
+								currentBottomIndex -= int( -this._latestScrollDeltaY / this.settings.postForceOneItemSize);
+								currentBottomIndex = currentBottomIndex > currentBottom.parent.numChildren? currentBottom.parent.numChildren - 1 : currentBottomIndex;
+							}
+							
+							item = currentBottom.parent.getChildAt(currentBottomIndex);
+							snapTo = ScrollPaneConstants.SNAP_TO_BOTTOM;
+						}
+					}
 				}
 			}
 			
@@ -604,6 +634,8 @@ package org.ranapat.scrollpane {
 			this._mouseDownMode = false;
 			this._mouseMovedMode = false;
 			this._latestMouseDownPoint = null;
+			this._latestScrollDeltaX = 0;
+			this._latestScrollDeltaY = 0;
 			this._scrollDirectionX = ScrollPaneConstants.DIRECTION_NONE;
 			this._scrollDirectionY = ScrollPaneConstants.DIRECTION_NONE;
 		}
@@ -625,6 +657,7 @@ package org.ranapat.scrollpane {
 					} else {
 						this._scrollDirectionX = ScrollPaneConstants.DIRECTION_RIGHT;
 					}
+					this._latestScrollDeltaX = deltaX;
 				}
 				if (!this.settings.scrollLockY) {
 					this.scrollY += deltaY;
@@ -633,6 +666,7 @@ package org.ranapat.scrollpane {
 					} else {
 						this._scrollDirectionY = ScrollPaneConstants.DIRECTION_DOWN;
 					}
+					this._latestScrollDeltaY = deltaY;
 				}
 				
 				this.updateScrollBars();

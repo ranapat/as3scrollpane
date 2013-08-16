@@ -174,8 +174,8 @@ package org.ranapat.scrollpane.examples {
 				s.addChild(tt);
 				*/
 				
-				//scrollPane.appendChild(s);
-				scrollPane.appendChild(btn);
+				scrollPane.appendChild(s);
+				//scrollPane.appendChild(btn);
 				
 				something.push(s);
 			}

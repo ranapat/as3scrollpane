@@ -27,6 +27,9 @@ package org.ranapat.scrollpane {
 		public static var DRAG_SCROLL:Boolean = false;
 		public static var DRAG_SCROLL_AUTO:Boolean = true;
 		
+		public static var POST_FORCE_MIN_DELTA:Number = 8;
+		public static var POST_FORCE_ONE_ITEM_SIZE:Number = 10;
+		
 		public var paddingTop:Number;
 		public var paddingRight:Number;
 		public var paddingBottom:Number;
@@ -50,6 +53,9 @@ package org.ranapat.scrollpane {
 		
 		public var dragScroll:Boolean;
 		public var dragScrollAuto:Boolean;
+		
+		public var postForceMinDelta:Number;
+		public var postForceOneItemSize:Number;
 		
 		public function ScrollPaneSettings() {
 			this.paddingTop = ScrollPaneSettings.PADDING_TOP;
@@ -75,6 +81,9 @@ package org.ranapat.scrollpane {
 			
 			this.dragScroll = ScrollPaneSettings.DRAG_SCROLL;
 			this.dragScrollAuto = ScrollPaneSettings.DRAG_SCROLL_AUTO;
+			
+			this.postForceMinDelta = ScrollPaneSettings.POST_FORCE_MIN_DELTA;
+			this.postForceOneItemSize = ScrollPaneSettings.POST_FORCE_ONE_ITEM_SIZE;
 		}
 	}
 
