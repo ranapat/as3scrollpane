@@ -399,6 +399,10 @@ package org.ranapat.scrollpane {
 		
 		private function updateSize():void {
 			if (!isNaN(this.width) && !isNaN(this.height)) {
+				this.graphics.beginFill(0xff00ff, 0);
+				this.graphics.drawRect(0, 0, this.width, this.height);
+				this.graphics.endFill();
+				
 				this.redrawAssets();
 				
 				this._content.graphics.drawRect(0, 0, this.width, this.height);
@@ -410,9 +414,6 @@ package org.ranapat.scrollpane {
 				this._control.graphics.beginFill(0xff00ff, 0);
 				this._control.graphics.drawRect(0, 0, this.width, this.height);
 				this._control.graphics.endFill();
-				
-				super.width = this.width;
-				super.height = this.height;
 				
 				this._background.width = this.width;
 				this._content.width = this.width;

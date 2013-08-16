@@ -193,10 +193,10 @@ package org.ranapat.scrollpane.examples {
 			var scroll:ScrollBar = new ScrollBar(ScrollBarConstants.MODE_VERTICAL);
 			//var scroll:ScrollBar = new ScrollBar(ScrollBarConstants.MODE_HORIZONTAL);
 			
-			scroll.x = 30;
-			scroll.y = 30;
+			scroll.x = scrollPane.x - 20;
+			scroll.y = scrollPane.y;
 			scroll.width = 10;
-			scroll.height = 400;
+			scroll.height = scrollPane.height;
 			/*
 			scroll.width = 400;
 			scroll.height = 10;

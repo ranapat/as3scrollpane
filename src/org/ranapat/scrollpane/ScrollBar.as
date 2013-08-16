@@ -1,4 +1,5 @@
 package org.ranapat.scrollpane {
+	import flash.display.DisplayObject;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
@@ -72,24 +73,23 @@ package org.ranapat.scrollpane {
 		}
 		
 		public function redraw():void {
-			if (
-				(this._mode == ScrollBarConstants.MODE_HORIZONTAL || this._mode == ScrollBarConstants.MODE_VERTICAL)
-				&& this._percents > 0 && this._percents <= 100
-				&& this._offset >= 0 && this._offset <= 100
-				&& !isNaN(this.width) && !isNaN(this.height)
-			) {
-				this.redrawAssets();
+			if (!isNaN(this.width) && !isNaN(this.height)) {
+				this.graphics.beginFill(0xff00ff, 1);
+				this.graphics.drawRect(0, 0, this.width, this.height);
+				this.graphics.endFill();				
 				
-				super.width = this.width;
-				super.height = this.height;
-				
-				this.reposition();
+				if (
+					(this._mode == ScrollBarConstants.MODE_HORIZONTAL || this._mode == ScrollBarConstants.MODE_VERTICAL)
+					&& this._percents > 0 && this._percents <= 100
+					&& this._offset >= 0 && this._offset <= 100
+				) {
+					this.redrawAssets();
+					this.reposition();
+				}
 			}
 		}
 		
 		override public function set width(value:Number):void {
-			super.width = value;
-			
 			this._width = value;
 			
 			this.redraw();
@@ -100,8 +100,6 @@ package org.ranapat.scrollpane {
 		}
 		
 		override public function set height(value:Number):void {
-			super.height = value;
-			
 			this._height = value;
 			
 			this.redraw();
@@ -112,10 +110,6 @@ package org.ranapat.scrollpane {
 		}
 		
 		protected function redrawAssets():void {
-			this.graphics.beginFill(0xffffff, 1);
-			this.graphics.drawRect(0, 0, this.width, this.height);
-			this.graphics.endFill();
-			
 			this._partA.graphics.beginFill(0x0000ff, .7);
 			this._partA.graphics.drawRect(0, 0, this.partAWidth, this.partAHeight);
 			this._partA.graphics.endFill();
@@ -142,14 +136,34 @@ package org.ranapat.scrollpane {
 		
 		protected function reposition():void {
 			if (this.mode == ScrollBarConstants.MODE_VERTICAL) {
-				this._partA.y = (this.height - this._partA.height - this._partB.height - this._partC.height) * this.offset / 100;
+				this._partA.y = this.usefulHeight * this.offset / 100;
 				this._partB.y = this._partA.y + this._partA.height;
 				this._partC.y = this._partA.y + this._partA.height + this._partB.height;
 			} else {
-				this._partA.x = (this.width - this._partA.width - this._partB.width - this._partC.width) * this.offset / 100;
+				this._partA.x = this.usefulWidth * this.offset / 100;
 				this._partB.x = this._partA.x + this._partA.width;
 				this._partC.x = this._partA.x + this._partA.width + this._partB.width;
 			}
+		}
+		
+		protected function get usefulWidth():Number {
+			return this.width - this._partA.width - this._partB.width - this._partC.width;
+		}
+		
+		protected function get usefulHeight():Number {
+			return this.height - this._partA.height - this._partB.height - this._partC.height;
+		}
+		
+		protected function addScrollComponentEventListeners(element:DisplayObject):void {
+			element.addEventListener(MouseEvent.MOUSE_DOWN, this.handleMouseDown, false, 0, true);
+			element.stage.addEventListener(MouseEvent.MOUSE_UP, this.handleMouseUp, false, 0, true);
+			element.stage.addEventListener(MouseEvent.MOUSE_MOVE, this.handleMouseMove, false, 0, true);
+		}
+		
+		protected function removeScrollComponentEventListeners(element:DisplayObject):void {
+			element.removeEventListener(MouseEvent.MOUSE_DOWN, this.handleMouseDown);
+			element.stage.removeEventListener(MouseEvent.MOUSE_UP, this.handleMouseUp);
+			element.stage.removeEventListener(MouseEvent.MOUSE_MOVE, this.handleMouseMove);
 		}
 		
 		private function get partAWidth():Number {
@@ -184,17 +198,9 @@ package org.ranapat.scrollpane {
 			this.addChild(this._partB);
 			this.addChild(this._partC);
 			
-			this._partA.addEventListener(MouseEvent.MOUSE_DOWN, this.handleMouseDown, false, 0, true);
-			this._partA.stage.addEventListener(MouseEvent.MOUSE_UP, this.handleMouseUp, false, 0, true);
-			this._partA.stage.addEventListener(MouseEvent.MOUSE_MOVE, this.handleMouseMove, false, 0, true);
-			
-			this._partB.addEventListener(MouseEvent.MOUSE_DOWN, this.handleMouseDown, false, 0, true);
-			this._partB.stage.addEventListener(MouseEvent.MOUSE_UP, this.handleMouseUp, false, 0, true);
-			this._partB.stage.addEventListener(MouseEvent.MOUSE_MOVE, this.handleMouseMove, false, 0, true);
-			
-			this._partC.addEventListener(MouseEvent.MOUSE_DOWN, this.handleMouseDown, false, 0, true);
-			this._partC.stage.addEventListener(MouseEvent.MOUSE_UP, this.handleMouseUp, false, 0, true);
-			this._partC.stage.addEventListener(MouseEvent.MOUSE_MOVE, this.handleMouseMove, false, 0, true);
+			this.addScrollComponentEventListeners(this._partA);
+			this.addScrollComponentEventListeners(this._partB);
+			this.addScrollComponentEventListeners(this._partC);
 			
 			this._partA.buttonMode = true;
 			this._partB.buttonMode = true;
@@ -204,17 +210,9 @@ package org.ranapat.scrollpane {
 		private function handleRemovedFromStage(e:Event):void {
 			this.removeEventListener(Event.REMOVED_FROM_STAGE, this.handleRemovedFromStage);
 			
-			this._partA.removeEventListener(MouseEvent.MOUSE_DOWN, this.handleMouseDown);
-			this._partA.stage.removeEventListener(MouseEvent.MOUSE_UP, this.handleMouseUp);
-			this._partA.stage.removeEventListener(MouseEvent.MOUSE_MOVE, this.handleMouseMove);
-			
-			this._partB.removeEventListener(MouseEvent.MOUSE_DOWN, this.handleMouseDown);
-			this._partB.stage.removeEventListener(MouseEvent.MOUSE_UP, this.handleMouseUp);
-			this._partB.stage.removeEventListener(MouseEvent.MOUSE_MOVE, this.handleMouseMove);
-			
-			this._partC.removeEventListener(MouseEvent.MOUSE_DOWN, this.handleMouseDown);
-			this._partC.stage.removeEventListener(MouseEvent.MOUSE_UP, this.handleMouseUp);
-			this._partC.stage.removeEventListener(MouseEvent.MOUSE_MOVE, this.handleMouseMove);
+			this.removeScrollComponentEventListeners(this._partA);
+			this.removeScrollComponentEventListeners(this._partB);
+			this.removeScrollComponentEventListeners(this._partC);
 		}
 		
 		private function handleMouseDown(e:MouseEvent):void {
@@ -250,10 +248,10 @@ package org.ranapat.scrollpane {
 				var deltaY:Number = point.y - this._latestMouseDownPoint.y;
 				
 				if (this.mode == ScrollBarConstants.MODE_HORIZONTAL) {
-					this.offset += deltaX / (this.width - this._partA.width - this._partB.width - this._partC.width) * 100;
+					this.offset += deltaX / this.usefulWidth * 100;
 					this._modeDirectionIncrease = deltaX > 0;
 				} else {
-					this.offset += deltaY / (this.height - this._partA.height - this._partB.height - this._partC.height) * 100;
+					this.offset += deltaY / this.usefulHeight * 100;
 					this._modeDirectionIncrease = deltaY > 0;
 				}
 				
