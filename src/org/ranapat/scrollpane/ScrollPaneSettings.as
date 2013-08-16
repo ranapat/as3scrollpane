@@ -1,12 +1,14 @@
 package org.ranapat.scrollpane {
-	
 	import com.greensock.easing.Elastic;
 	import com.greensock.easing.Linear;
+	
 	public class ScrollPaneSettings {
-		public static var PADDING_TOP:Number = 0;
-		public static var PADDING_RIGHT:Number = 0;
-		public static var PADDING_BOTTOM:Number = 0;
-		public static var PADDING_LEFT:Number = 0;
+		public static var PADDING_TOP:Number = 10;
+		public static var PADDING_RIGHT:Number = 10;
+		public static var PADDING_BOTTOM:Number = 10;
+		public static var PADDING_LEFT:Number = 10;
+		
+		public static var SCROLL_MULTIPLIER:Number = 3;
 		
 		public static var X_SPACE_BETWEEN_ITEMS:Number = 0;
 		public static var Y_SPACE_BETWEEN_ITEMS:Number = 0;
@@ -22,10 +24,15 @@ package org.ranapat.scrollpane {
 		public static var SCROLL_LOCK_Y:Boolean = false;
 		public static var SCROLL_SNAP_TO_ITEMS:Boolean = false;
 		
+		public static var DRAG_SCROLL:Boolean = false;
+		public static var DRAG_SCROLL_AUTO:Boolean = true;
+		
 		public var paddingTop:Number;
 		public var paddingRight:Number;
 		public var paddingBottom:Number;
 		public var paddingLeft:Number;
+		
+		public var scrollMultiplier:Number;
 		
 		public var xSpaceBetweenItems:Number;
 		public var ySpaceBetweenItems:Number;
@@ -37,15 +44,20 @@ package org.ranapat.scrollpane {
 		public var scrollAutoFocusTweenDuration:Number;
 		
 		public var queueTweens:Boolean;
-		public var scrollLockX:Boolean = true;
-		public var scrollLockY:Boolean = true;
-		public var scrollSnapToItems:Boolean = true;
+		public var scrollLockX:Boolean;
+		public var scrollLockY:Boolean;
+		public var scrollSnapToItems:Boolean;
+		
+		public var dragScroll:Boolean;
+		public var dragScrollAuto:Boolean;
 		
 		public function ScrollPaneSettings() {
 			this.paddingTop = ScrollPaneSettings.PADDING_TOP;
 			this.paddingRight = ScrollPaneSettings.PADDING_RIGHT;
 			this.paddingBottom = ScrollPaneSettings.PADDING_BOTTOM;
 			this.paddingLeft = ScrollPaneSettings.PADDING_LEFT;
+			
+			this.scrollMultiplier = ScrollPaneSettings.SCROLL_MULTIPLIER;
 			
 			this.xSpaceBetweenItems = ScrollPaneSettings.X_SPACE_BETWEEN_ITEMS;
 			this.ySpaceBetweenItems = ScrollPaneSettings.Y_SPACE_BETWEEN_ITEMS;
@@ -60,6 +72,9 @@ package org.ranapat.scrollpane {
 			this.scrollLockX = ScrollPaneSettings.SCROLL_LOCK_X;
 			this.scrollLockY = ScrollPaneSettings.SCROLL_LOCK_Y;
 			this.scrollSnapToItems = ScrollPaneSettings.SCROLL_SNAP_TO_ITEMS;
+			
+			this.dragScroll = ScrollPaneSettings.DRAG_SCROLL;
+			this.dragScrollAuto = ScrollPaneSettings.DRAG_SCROLL_AUTO;
 		}
 	}
 

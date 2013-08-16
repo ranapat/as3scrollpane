@@ -18,6 +18,8 @@ package org.ranapat.scrollpane {
 		
 		private var _offsetToApply:Point;
 		
+		private var _mouseDownStageMode:Boolean;
+		private var _mouseMovedStageMode:Boolean;
 		private var _mouseDownMode:Boolean;
 		private var _mouseMovedMode:Boolean;
 		private var _latestMouseDownPoint:Point;
@@ -474,6 +476,28 @@ package org.ranapat.scrollpane {
 			}			
 		}
 		
+		private function dragScrollEnabled():void {
+			if (!this._control.parent) {
+				super.addChild(this._control);
+				
+				this._control.addEventListener(MouseEvent.MOUSE_DOWN, this.handleControlMouseDown, false, 0, true);
+				this._control.stage.addEventListener(MouseEvent.MOUSE_UP, this.handleControlMouseUp, false, 0, true);
+				this._control.addEventListener(MouseEvent.MOUSE_MOVE, this.handleControlMouseMove, false, 0, true);
+				this._control.addEventListener(MouseEvent.CLICK, this.handleControlClick, false, 0, true);
+			}
+		}
+		
+		private function dragScrollDisabled():void {
+			if (this._control.parent) {
+				this._control.removeEventListener(MouseEvent.MOUSE_DOWN, this.handleControlMouseDown);
+				this._control.stage.removeEventListener(MouseEvent.MOUSE_UP, this.handleControlMouseUp);
+				this._control.removeEventListener(MouseEvent.MOUSE_MOVE, this.handleControlMouseMove);
+				this._control.removeEventListener(MouseEvent.CLICK, this.handleControlClick);
+				
+				super.removeChild(this._control);
+			}
+		}
+		
 		private function handleTweenComplete():void {
 			this._offsetToApply = null;
 			this.updateScrollBars();
@@ -486,7 +510,6 @@ package org.ranapat.scrollpane {
 			super.addChild(this._background);
 			super.addChild(this._content);
 			super.addChild(this._mask);
-			super.addChild(this._control);
 			
 			this._background.x = 0;
 			this._background.y = 0;
@@ -504,24 +527,61 @@ package org.ranapat.scrollpane {
 			
 			this.updateSize();
 			
-			this._control.addEventListener(MouseEvent.MOUSE_DOWN, this.handleControlMouseDown, false, 0, true);
-			this._control.stage.addEventListener(MouseEvent.MOUSE_UP, this.handleControlMouseUp, false, 0, true);
-			this._control.addEventListener(MouseEvent.MOUSE_MOVE, this.handleControlMouseMove, false, 0, true);
-			this._control.addEventListener(MouseEvent.CLICK, this.handleControlClick, false, 0, true);
+			this.addEventListener(MouseEvent.MOUSE_WHEEL, this.handleMouseWheel, false, 0, true);
+			if (this.settings.dragScrollAuto) {
+				this.stage.addEventListener(MouseEvent.MOUSE_DOWN, this.handleStageMouseDown, false, 0, true);
+				this.stage.addEventListener(MouseEvent.MOUSE_UP, this.handleStageMouseUp, false, 0, true);
+				this.stage.addEventListener(MouseEvent.MOUSE_MOVE, this.handleStageMouseMove, false, 0, true);
+			}
+			if (this.settings.dragScroll) {
+				this.dragScrollEnabled();
+			}
 		}
 		
 		private function handleRemovedFromStage(e:Event):void {
 			this.removeEventListener(Event.REMOVED_FROM_STAGE, this.handleRemovedFromStage);
 			
-			this._control.removeEventListener(MouseEvent.MOUSE_DOWN, this.handleControlMouseDown);
-			this._control.stage.removeEventListener(MouseEvent.MOUSE_UP, this.handleControlMouseUp);
-			this._control.removeEventListener(MouseEvent.MOUSE_MOVE, this.handleControlMouseMove);
-			this._control.removeEventListener(MouseEvent.CLICK, this.handleControlClick);
+			this.removeEventListener(MouseEvent.MOUSE_WHEEL, this.handleMouseWheel);
+			if (this.settings.dragScrollAuto) {
+				this.stage.removeEventListener(MouseEvent.MOUSE_DOWN, this.handleStageMouseDown);
+				this.stage.removeEventListener(MouseEvent.MOUSE_UP, this.handleStageMouseUp);
+				this.stage.removeEventListener(MouseEvent.MOUSE_MOVE, this.handleStageMouseMove);
+			}
+			
+			this.dragScrollDisabled();
+		}
+		
+		private function handleMouseWheel(e:MouseEvent):void {
+			this.scrollY -= e.delta * this.settings.scrollMultiplier;
+			
+			this._latestMouseDownPoint = null;
+			this._mouseDownMode = false;
+			this._mouseMovedMode = false;
+		}
+		
+		private function handleStageMouseDown(e:MouseEvent):void {
+			this._mouseDownStageMode = true;
+		}
+		
+		private function handleStageMouseUp(e:MouseEvent):void {
+			this._mouseDownStageMode = false;
+			this._mouseMovedStageMode = false;
+			
+			this.dragScrollDisabled();
+		}
+		
+		private function handleStageMouseMove(e:MouseEvent):void {
+			if (this._mouseDownStageMode) {
+				this._mouseMovedStageMode = true;
+
+				this.handleControlMouseDown(e);
+				this.dragScrollEnabled();
+			}
 		}
 		
 		private function handleControlMouseDown(e:MouseEvent):void {
 			this._mouseDownMode = true;
-			this._latestMouseDownPoint = new Point(e.localX, e.localY);
+			this._latestMouseDownPoint = e.target.localToGlobal(new Point(e.localX, e.localY));
 			TweenLite.killTweensOf(this._content);
 			this._offsetToApply = null;
 		}
@@ -551,11 +611,12 @@ package org.ranapat.scrollpane {
 		private function handleControlMouseMove(e:MouseEvent):void {
 			if (this._mouseDownMode) {
 				this._mouseMovedMode = true;
+				var globalPoint:Point = e.target.localToGlobal(new Point(e.localX, e.localY));
 				
-				var deltaX:Number = this._latestMouseDownPoint.x - e.localX;
-				var deltaY:Number = this._latestMouseDownPoint.y - e.localY;
+				var deltaX:Number = this._latestMouseDownPoint.x - globalPoint.x;
+				var deltaY:Number = this._latestMouseDownPoint.y - globalPoint.y;
 				
-				this._latestMouseDownPoint = new Point(e.localX, e.localY);
+				this._latestMouseDownPoint = e.target.localToGlobal(new Point(e.localX, e.localY));
 				
 				if (!this.settings.scrollLockX) {
 					this.scrollX += deltaX;

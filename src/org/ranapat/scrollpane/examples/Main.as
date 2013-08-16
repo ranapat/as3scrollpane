@@ -1,11 +1,15 @@
 package org.ranapat.scrollpane.examples {
 	import com.greensock.easing.Elastic;
 	import com.greensock.TweenLite;
+	import flash.display.DisplayObjectContainer;
 	import flash.display.MovieClip;
+	import flash.display.Shape;
+	import flash.display.SimpleButton;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.text.TextField;
+	import flash.text.TextFormat;
 	import org.ranapat.scrollpane.ScrollBar;
 	import org.ranapat.scrollpane.ScrollBarConstants;
 	import org.ranapat.scrollpane.ScrollPane;
@@ -90,15 +94,71 @@ package org.ranapat.scrollpane.examples {
 			addChild(scrollPane);
 			
 			var something:Vector.<Sprite> = new Vector.<Sprite>();
-			for (var i:uint = 0; i < 20; ++i) {
+			for (var i:uint = 0; i < 200; ++i) {
 				var s:Sprite = new Sprite();
 					
 				s.graphics.beginFill(Math.random() * 0xffffff, 1);
 				s.graphics.drawRect(0, 0, 300 - 20, 50);
 				s.graphics.endFill();
 				
+				//
+				var bgRed:Shape = new Shape()
+				bgRed.graphics.beginFill( 0xFF0000 );
+				bgRed.graphics.drawRect( 0, 0, 200, 30 );
+				bgRed.graphics.endFill();
+ 
+				var bgBlack:Sprite = new Sprite();
+				bgBlack.graphics.beginFill( 0x000000 );
+				bgBlack.graphics.drawRect( 0, 0, 200, 30 );
+				bgBlack.graphics.endFill();
+				 
+				var tf:TextFormat = new TextFormat();
+				tf.color = 0xFFFFFF;
+				tf.font = "Verdana";
+				tf.size = 17;
+				tf.align = "center";
+				 
+				var txt:TextField = new TextField();
+				txt.text = "Snipplr Rocks! (" + i + " )";
+				txt.x = 0;
+				txt.y = 0;
+				txt.width = bgRed.width;
+				txt.height = bgRed.height;
+				txt.setTextFormat( tf );
+				 
+				var mc:MovieClip = new MovieClip();
+				mc.addChild( bgRed );
+				mc.addChild( txt );
+				 
+				var btn:SimpleButton = new SimpleButton();
+				btn.upState = mc;
+				btn.overState = bgBlack;
+				btn.downState = btn.upState;
+				btn.hitTestState = btn.upState;
+				btn.x = stage.stageWidth / 2 - btn.width;
+				btn.y = stage.stageHeight / 2 - btn.height;
+				//
+				
+				/*
 				s.addEventListener(MouseEvent.CLICK, function (e:MouseEvent):void {
 					trace("we are here " + e.target.name)
+				}, false, 0, true);
+				s.addEventListener(MouseEvent.MOUSE_OVER, function (e:MouseEvent):void {
+					trace("we are here mouse_over " + e.target.name)
+				}, false, 0, true);
+				s.addEventListener(MouseEvent.MOUSE_OUT, function (e:MouseEvent):void {
+					trace("we are here mouse_out " + e.target.name)
+				}, false, 0, true);
+				*/
+				
+				btn.addEventListener(MouseEvent.CLICK, function (e:MouseEvent):void {
+					trace("we are here click " + e.target.name)
+				});
+				btn.addEventListener(MouseEvent.MOUSE_OVER, function (e:MouseEvent):void {
+					trace("we are here mouse_over " + e.target.name)
+				});
+				btn.addEventListener(MouseEvent.MOUSE_OUT, function (e:MouseEvent):void {
+					trace("we are here mouse_out " + e.target.name)
 				});
 				
 				//s.x = 10;
@@ -114,7 +174,8 @@ package org.ranapat.scrollpane.examples {
 				s.addChild(tt);
 				*/
 				
-				scrollPane.appendChild(s);
+				//scrollPane.appendChild(s);
+				scrollPane.appendChild(btn);
 				
 				something.push(s);
 			}
