@@ -140,7 +140,7 @@ package org.ranapat.scrollpane {
 			this._partC.height = this.partCHeight;			
 		}
 		
-		private function reposition():void {
+		protected function reposition():void {
 			if (this.mode == ScrollBarConstants.MODE_VERTICAL) {
 				this._partA.y = (this.height - this._partA.height - this._partB.height - this._partC.height) * this.offset / 100;
 				this._partB.y = this._partA.y + this._partA.height;
