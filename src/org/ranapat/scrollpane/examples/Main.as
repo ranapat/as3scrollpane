@@ -94,7 +94,7 @@ package org.ranapat.scrollpane.examples {
 			addChild(scrollPane);
 			
 			var something:Vector.<Sprite> = new Vector.<Sprite>();
-			for (var i:uint = 0; i < 200; ++i) {
+			for (var i:uint = 0; i < 20; ++i) {
 				var s:Sprite = new Sprite();
 					
 				s.graphics.beginFill(Math.random() * 0xffffff, 1);

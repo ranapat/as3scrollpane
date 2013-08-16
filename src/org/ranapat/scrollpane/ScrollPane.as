@@ -28,6 +28,7 @@ package org.ranapat.scrollpane {
 		private var _latestMouseUpTarget:Object;
 		private var _latestScrollDeltaX:Number;
 		private var _latestScrollDeltaY:Number;
+		private var _postScrollFix:Boolean;
 		
 		private var _scrollbars:Vector.<ScrollBar>;
 		
@@ -280,6 +281,8 @@ package org.ranapat.scrollpane {
 			this._scrollbars.push(scrollBar);
 			
 			scrollBar.scrollPane = this;
+			
+			this.updateScrollBars();
 		}
 		
 		public function removeScrollBar(scrollBar:ScrollBar):void {
@@ -291,6 +294,7 @@ package org.ranapat.scrollpane {
 		override public function get numChildren():int {
 			return this._content.numChildren;
 		}
+		
 		private function updateScrollBars():void {
 			var length:uint = this._scrollbars.length;
 			var scrollBar:ScrollBar;
@@ -303,6 +307,13 @@ package org.ranapat.scrollpane {
 				} else if (this.mode == ScrollPaneConstants.APPEND_MODE_ROW) {
 					scrollBar.offset = this.scrollXPercents;
 					scrollBar.percents = this.visibilityXProportion;
+				}
+				
+				scrollBar.visible = true;
+				if (this.settings.autoHideScrollBarsOnFullBar) {
+					if (scrollBar.offset == 0 && scrollBar.percents == 100) {
+						scrollBar.visible = false;
+					}
 				}
 				
 			}
@@ -450,6 +461,9 @@ package org.ranapat.scrollpane {
 		private function revalidateList():void {
 			var item:DisplayObject;
 			var snapTo:uint;
+			var ease:Function = this.settings.scrollAutoFocusTweenEase;
+			var duration:Number = this.settings.scrollAutoFocusTweenDuration;
+			
 			if (this.totalHeight > this.height && this._content.numChildren > 1 && this.settings.scrollSnapToItems) {
 				if (this._scrollDirectionY == ScrollPaneConstants.DIRECTION_DOWN) {
 					item = this.firstPartiallyVisibleItem;
@@ -471,6 +485,9 @@ package org.ranapat.scrollpane {
 					item = this._content.numChildren > 0? this._content.getChildAt(0) : null
 					snapTo = ScrollPaneConstants.SNAP_TO_TOP;
 				} else {
+					ease = this.settings.scrollOverDragTweenEase;
+					duration = this.settings.scrollOverDragTweenDuration;
+							
 					if (this._latestScrollDeltaY > 0) {
 						if (this._latestScrollDeltaY > this.settings.postForceMinDelta) {
 							var currentTop:DisplayObject = this.firstPartiallyVisibleItem;
@@ -479,30 +496,36 @@ package org.ranapat.scrollpane {
 							if (currentTopIndex > 0) {
 								currentTopIndex += int(this._latestScrollDeltaY / this.settings.postForceOneItemSize);
 								currentTopIndex = currentTopIndex < 0? 0 : currentTopIndex;
+								currentTopIndex = currentTopIndex >= currentTop.parent.numChildren? currentTop.parent.numChildren - 1 : currentTopIndex;
 							}
 							
 							item = currentTop.parent.getChildAt(currentTopIndex);
 							snapTo = ScrollPaneConstants.SNAP_TO_TOP;
+							
+							this._postScrollFix = true;
 						}
 					} else {
 						if (this._latestScrollDeltaY < -this.settings.postForceMinDelta) {
 							var currentBottom:DisplayObject = this.latestPartiallyVisibleItem;
-							var currentBottomIndex:uint = currentBottom.parent.getChildIndex(currentBottom);
+							var currentBottomIndex:int = currentBottom.parent.getChildIndex(currentBottom);
 							
 							if (currentBottomIndex < currentBottom.parent.numChildren) {
 								currentBottomIndex -= int( -this._latestScrollDeltaY / this.settings.postForceOneItemSize);
-								currentBottomIndex = currentBottomIndex > currentBottom.parent.numChildren? currentBottom.parent.numChildren - 1 : currentBottomIndex;
+								currentBottomIndex = currentBottomIndex < 0? 0 : currentBottomIndex;
+								currentBottomIndex = currentBottomIndex >= currentBottom.parent.numChildren? currentBottom.parent.numChildren - 1 : currentBottomIndex;
 							}
 							
 							item = currentBottom.parent.getChildAt(currentBottomIndex);
 							snapTo = ScrollPaneConstants.SNAP_TO_BOTTOM;
+							
+							this._postScrollFix = true;
 						}
 					}
 				}
 			}
 			
 			if (item) {
-				this.snap(item, snapTo, this.settings.scrollAutoFocusTweenEase, this.settings.scrollAutoFocusTweenDuration);
+				this.snap(item, snapTo, ease, duration);
 			}			
 		}
 		
@@ -531,6 +554,12 @@ package org.ranapat.scrollpane {
 		private function handleTweenComplete():void {
 			this._offsetToApply = null;
 			this.updateScrollBars();
+			
+			if (this._postScrollFix) {
+				this.revalidateList();
+				
+				this._postScrollFix = false;
+			}
 		}
 		
 		private function handleAddedToStage(e:Event):void {

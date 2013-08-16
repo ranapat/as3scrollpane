@@ -19,6 +19,9 @@ package org.ranapat.scrollpane {
 		public static var SCROLL_AUTO_FOCUS_TWEEN_EASE:Function = Elastic.easeOut;
 		public static var SCROLL_AUTO_FOCUS_TWEEN_DURATION:Number = 1.3;
 		
+		public static var SCROLL_OVER_DRAG_TWEEN_EASE:Function = Linear.easeOut;
+		public static var SCROLL_OVER_DRAG_TWEEN_DURATION:Number = .3;
+		
 		public static var QUEUE_TWEENS:Boolean = true;
 		public static var SCROLL_LOCK_X:Boolean = true;
 		public static var SCROLL_LOCK_Y:Boolean = false;
@@ -27,8 +30,11 @@ package org.ranapat.scrollpane {
 		public static var DRAG_SCROLL:Boolean = false;
 		public static var DRAG_SCROLL_AUTO:Boolean = true;
 		
-		public static var POST_FORCE_MIN_DELTA:Number = 8;
+		public static var POST_FORCE_MIN_DELTA:Number = 15;
 		public static var POST_FORCE_ONE_ITEM_SIZE:Number = 5;
+		
+		public static var AUTO_HIDE_SCROLL_BAR_ON_FULL_BAR:Boolean = true;
+		public static var AUTO_HIDE_SCROLL_BARS_ON_TIMEOUT:Boolean = true;
 		
 		public var paddingTop:Number;
 		public var paddingRight:Number;
@@ -46,6 +52,9 @@ package org.ranapat.scrollpane {
 		public var scrollAutoFocusTweenEase:Function;
 		public var scrollAutoFocusTweenDuration:Number;
 		
+		public var scrollOverDragTweenEase:Function;
+		public var scrollOverDragTweenDuration:Number;
+		
 		public var queueTweens:Boolean;
 		public var scrollLockX:Boolean;
 		public var scrollLockY:Boolean;
@@ -56,6 +65,9 @@ package org.ranapat.scrollpane {
 		
 		public var postForceMinDelta:Number;
 		public var postForceOneItemSize:Number;
+		
+		public var autoHideScrollBarsOnFullBar:Boolean;
+		public var autoHideScrollBarsOnTimeout:Boolean;
 		
 		public function ScrollPaneSettings() {
 			this.paddingTop = ScrollPaneSettings.PADDING_TOP;
@@ -74,6 +86,9 @@ package org.ranapat.scrollpane {
 			this.scrollAutoFocusTweenEase = ScrollPaneSettings.SCROLL_AUTO_FOCUS_TWEEN_EASE;
 			this.scrollAutoFocusTweenDuration = ScrollPaneSettings.SCROLL_AUTO_FOCUS_TWEEN_DURATION;
 			
+			this.scrollOverDragTweenEase = ScrollPaneSettings.SCROLL_OVER_DRAG_TWEEN_EASE;
+			this.scrollOverDragTweenDuration = ScrollPaneSettings.SCROLL_OVER_DRAG_TWEEN_DURATION;
+			
 			this.queueTweens = ScrollPaneSettings.QUEUE_TWEENS;
 			this.scrollLockX = ScrollPaneSettings.SCROLL_LOCK_X;
 			this.scrollLockY = ScrollPaneSettings.SCROLL_LOCK_Y;
@@ -84,6 +99,9 @@ package org.ranapat.scrollpane {
 			
 			this.postForceMinDelta = ScrollPaneSettings.POST_FORCE_MIN_DELTA;
 			this.postForceOneItemSize = ScrollPaneSettings.POST_FORCE_ONE_ITEM_SIZE;
+			
+			this.autoHideScrollBarsOnFullBar = ScrollPaneSettings.AUTO_HIDE_SCROLL_BAR_ON_FULL_BAR;
+			this.autoHideScrollBarsOnTimeout = ScrollPaneSettings.AUTO_HIDE_SCROLL_BARS_ON_TIMEOUT;
 		}
 	}
 
