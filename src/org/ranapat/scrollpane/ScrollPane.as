@@ -70,6 +70,19 @@ package org.ranapat.scrollpane {
 		override public function get height():Number {
 			return this._height;
 		}
+		
+		override public function getChildAt(index:int):DisplayObject {
+			return this._content.getChildAt(index);
+		}
+		
+		override public function addChild(item:DisplayObject):DisplayObject {
+			this._content.addChild(item);
+			
+			this.updateScrollBars();
+			
+			return item;
+		}
+		
 		override public function removeChild(item:DisplayObject):DisplayObject {
 			this._content.removeChild(item);
 
@@ -80,12 +93,8 @@ package org.ranapat.scrollpane {
 			return item;
 		}
 		
-		override public function addChild(item:DisplayObject):DisplayObject {
-			this._content.addChild(item);
-			
-			this.updateScrollBars();
-			
-			return item;
+		override public function get numChildren():int {
+			return this._content.numChildren;
 		}
 		
 		public function appendChild(item:DisplayObject):DisplayObject {
@@ -275,6 +284,7 @@ package org.ranapat.scrollpane {
 			this._scrollDirectionY = scrollDirectionY;
 			
 			this.revalidateList();
+			this.updateScrollBars();
 		}
 		
 		public function addScrollBar(scrollBar:ScrollBar):void {
@@ -289,10 +299,6 @@ package org.ranapat.scrollpane {
 			this._scrollbars.splice(this._scrollbars.indexOf(scrollBar), 1);
 			
 			scrollBar.scrollPane = null;
-		}
-		
-		override public function get numChildren():int {
-			return this._content.numChildren;
 		}
 		
 		protected function redrawAssets():void {
