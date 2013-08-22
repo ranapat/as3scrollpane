@@ -97,6 +97,14 @@ package org.ranapat.scrollpane {
 			return this._content.numChildren;
 		}
 		
+		public function removeAllChildren():Vector.<DisplayObject> {
+			var result:Vector.<DisplayObject> = new Vector.<DisplayObject>();
+			while (this.numChildren > 0) {
+				result.push(this.removeChild(this.getChildAt(this.numChildren - 1)));
+			}
+			return result;
+		}
+		
 		public function appendChild(item:DisplayObject):DisplayObject {
 			if (this._content.numChildren == 0) {
 				item.x = this.settings.paddingLeft;
@@ -232,31 +240,40 @@ package org.ranapat.scrollpane {
 		
 		public function snap(item:DisplayObject, mode:uint, ease:Function = null, duration:Number = Number.NaN, easeParams:Array = null):void {
 			if (item.parent == this._content) {
-				var destinationX:Number = Number.NaN;
-				var destinationY:Number = Number.NaN;
+				var params:Object = {
+					x: Number.NaN,
+					y: Number.NaN,
+					ease: ease != null? ease : Linear.easeNone,
+					easeParams: easeParams,
+					onComplete: this.handleTweenComplete
+				};
 				
 				if (mode == ScrollPaneConstants.SNAP_TO_TOP) {
-					destinationX = item.x - this.settings.paddingLeft;
-					destinationY = -(item.y - this.settings.paddingTop);
+					if (!this.settings.scrollLockX) {
+						trace("we go here??? (2)")
+						params.x = item.x - this.settings.paddingLeft;
+					}
+					if (!this.settings.scrollLockY) {
+						trace("we go here??? (3)")
+						params.y = -(item.y - this.settings.paddingTop);
+					}
 				} else if (mode == ScrollPaneConstants.SNAP_TO_BOTTOM) {
-					destinationX = item.x - this.settings.paddingLeft;
-					destinationY = this.height - item.y - item.height - this.settings.paddingTop;
+					if (!this.settings.scrollLockX) {
+						params.x = item.x - this.settings.paddingLeft;
+					}
+					if (!this.settings.scrollLockY) {
+						params.y = this.height - item.y - item.height - this.settings.paddingTop;
+					}
 				} else {
 					throw new Error("No more modes are implemented so far! Sorry :(");
 				}
 				
-				if (!isNaN(destinationX) && !isNaN(destinationY)) {
-					this.ensureOffsetToApply(destinationX, destinationY);
+				if (!isNaN(params.x) || !isNaN(params.y)) {
+					this.ensureOffsetToApply(params.x, params.y);
 					TweenLite.to(
 						this._content,
 						!isNaN(duration)? duration : this.settings.defaultTweenDuration,
-						{
-							x: destinationX,
-							y: destinationY,
-							ease: ease != null? ease : Linear.easeNone,
-							easeParams: easeParams,
-							onComplete: this.handleTweenComplete
-						}
+						params
 					);					
 				}
 			}
