@@ -268,6 +268,8 @@ package org.ranapat.scrollpane {
 				
 				if (!isNaN(params.x) || !isNaN(params.y)) {
 					this.ensureOffsetToApply(params.x, params.y);
+					if (isNaN(params.x)) { delete params.x; }
+					if (isNaN(params.y)) { delete params.y; }
 					TweenLite.to(
 						this._content,
 						!isNaN(duration)? duration : this.settings.defaultTweenDuration,
@@ -484,11 +486,11 @@ package org.ranapat.scrollpane {
 			return null;
 		}
 		
-		private function revalidateList():void {
+		private function revalidateList(istantMode:Boolean = false):void {
 			var item:DisplayObject;
 			var snapTo:uint;
-			var ease:Function = this.settings.scrollAutoFocusTweenEase;
-			var duration:Number = this.settings.scrollAutoFocusTweenDuration;
+			var ease:Function = istantMode? null : this.settings.scrollAutoFocusTweenEase;
+			var duration:Number = istantMode? null : this.settings.scrollAutoFocusTweenDuration;
 			
 			if (this.totalHeight > this.height && this._content.numChildren > 1 && this.settings.scrollSnapToItems) {
 				if (this._scrollDirectionY == ScrollPaneConstants.DIRECTION_DOWN) {
@@ -504,9 +506,17 @@ package org.ranapat.scrollpane {
 				if (this._content.y > 0) {
 					item = this.firstPartiallyVisibleItem;
 					snapTo = ScrollPaneConstants.SNAP_TO_TOP;
-				} else if (this._content.y + this.totalHeight < this.height && this.totalHeight > this.height){
-					item = this.latestPartiallyVisibleItem;
-					snapTo = ScrollPaneConstants.SNAP_TO_BOTTOM;
+				} else if (this._content.y + this.totalHeight < this.height && this.totalHeight > this.height) {
+					if (this._scrollDirectionY == ScrollPaneConstants.DIRECTION_DOWN) {
+						item = this.firstPartiallyVisibleItem;
+						snapTo = ScrollPaneConstants.SNAP_TO_TOP;
+					} else if (this._scrollDirectionY == ScrollPaneConstants.DIRECTION_UP) {
+						item = this.latestPartiallyVisibleItem;
+						snapTo = ScrollPaneConstants.SNAP_TO_BOTTOM;
+					} else {
+						item = this.latestPartiallyVisibleItem;
+						snapTo = ScrollPaneConstants.SNAP_TO_BOTTOM;
+					}
 				} else if (this._content.y + this.totalHeight < this.height && this.totalHeight <= this.height) {
 					item = this._content.numChildren > 0? this._content.getChildAt(0) : null
 					snapTo = ScrollPaneConstants.SNAP_TO_TOP;
@@ -614,7 +624,7 @@ package org.ranapat.scrollpane {
 			
 			this.addEventListener(MouseEvent.MOUSE_WHEEL, this.handleMouseWheel, false, 0, true);
 			if (this.settings.dragScrollAuto) {
-				this.stage.addEventListener(MouseEvent.MOUSE_DOWN, this.handleStageMouseDown, false, 0, true);
+				this.addEventListener(MouseEvent.MOUSE_DOWN, this.handlePreStageMouseDown, false, 0, true);
 				this.stage.addEventListener(MouseEvent.MOUSE_UP, this.handleStageMouseUp, false, 0, true);
 				this.stage.addEventListener(MouseEvent.MOUSE_MOVE, this.handleStageMouseMove, false, 0, true);
 			}
@@ -628,7 +638,7 @@ package org.ranapat.scrollpane {
 			
 			this.removeEventListener(MouseEvent.MOUSE_WHEEL, this.handleMouseWheel);
 			if (this.settings.dragScrollAuto) {
-				this.stage.removeEventListener(MouseEvent.MOUSE_DOWN, this.handleStageMouseDown);
+				this.removeEventListener(MouseEvent.MOUSE_DOWN, this.handlePreStageMouseDown);
 				this.stage.removeEventListener(MouseEvent.MOUSE_UP, this.handleStageMouseUp);
 				this.stage.removeEventListener(MouseEvent.MOUSE_MOVE, this.handleStageMouseMove);
 			}
@@ -637,14 +647,20 @@ package org.ranapat.scrollpane {
 		}
 		
 		private function handleMouseWheel(e:MouseEvent):void {
-			this.scrollY -= e.delta * this.settings.scrollMultiplier;
+			var desired:Number = this.scrollY - e.delta * this.settings.scrollMultiplier;
+			this.scrollY = desired < 0? 0 : desired;
+			
+			this._scrollDirectionY = e.delta > 0? ScrollPaneConstants.DIRECTION_DOWN : ScrollPaneConstants.DIRECTION_UP;
 			
 			this._latestMouseDownPoint = null;
 			this._mouseDownMode = false;
 			this._mouseMovedMode = false;
+			
+			this.revalidateList(true);
+			this.updateScrollBars();
 		}
 		
-		private function handleStageMouseDown(e:MouseEvent):void {
+		private function handlePreStageMouseDown(e:MouseEvent):void {
 			this._mouseDownStageMode = true;
 		}
 		
