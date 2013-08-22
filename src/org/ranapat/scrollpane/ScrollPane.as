@@ -250,11 +250,9 @@ package org.ranapat.scrollpane {
 				
 				if (mode == ScrollPaneConstants.SNAP_TO_TOP) {
 					if (!this.settings.scrollLockX) {
-						trace("we go here??? (2)")
 						params.x = item.x - this.settings.paddingLeft;
 					}
 					if (!this.settings.scrollLockY) {
-						trace("we go here??? (3)")
 						params.y = -(item.y - this.settings.paddingTop);
 					}
 				} else if (mode == ScrollPaneConstants.SNAP_TO_BOTTOM) {
