@@ -23,7 +23,7 @@ package org.ranapat.scrollpane {
 		public static var SCROLL_OVER_DRAG_TWEEN_DURATION:Number = .3;
 		
 		public static var QUEUE_TWEENS:Boolean = true;
-		public static var SCROLL_LOCK_X:Boolean = true;
+		public static var SCROLL_LOCK_X:Boolean = false;
 		public static var SCROLL_LOCK_Y:Boolean = false;
 		public static var SCROLL_SNAP_TO_ITEMS:Boolean = false;
 		

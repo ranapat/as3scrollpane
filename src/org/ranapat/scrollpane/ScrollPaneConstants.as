@@ -1,8 +1,9 @@
 package org.ranapat.scrollpane {
 	
 	public class ScrollPaneConstants {
-		public static const APPEND_MODE_COLUMN:uint = 0;
-		public static const APPEND_MODE_ROW:uint = 1;
+		public static const APPEND_MODE_FREE:uint = 0;
+		public static const APPEND_MODE_COLUMN:uint = 1;
+		public static const APPEND_MODE_ROW:uint = 2;
 		
 		public static const DIRECTION_NONE:uint = 0;
 		public static const DIRECTION_UP:uint = 1;

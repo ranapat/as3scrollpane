@@ -36,11 +36,15 @@ package org.ranapat.scrollpane {
 		
 		public var settings:ScrollPaneSettings;
 		
-		public function ScrollPane(_mode:uint = ScrollPaneConstants.APPEND_MODE_COLUMN, _settings:ScrollPaneSettings = null) {
+		public function ScrollPane(_mode:uint = ScrollPaneConstants.APPEND_MODE_FREE, _settings:ScrollPaneSettings = null) {
 			super();
 			
 			this.mode = _mode;
 			this.settings = _settings? _settings : new ScrollPaneSettings();
+			
+			this.settings.scrollLockX = this.mode == ScrollPaneConstants.APPEND_MODE_COLUMN;
+			this.settings.scrollLockY = this.mode == ScrollPaneConstants.APPEND_MODE_ROW;
+			
 			this._scrollbars = new Vector.<ScrollBar>();
 			
 			this._background = new Sprite();
@@ -112,8 +116,9 @@ package org.ranapat.scrollpane {
 			} else {
 				var prevItem:DisplayObject;
 				
+				prevItem = this._content.getChildAt(this._content.numChildren - 1);
+				
 				if (this.mode == ScrollPaneConstants.APPEND_MODE_COLUMN) {
-					prevItem = this._content.getChildAt(this._content.numChildren - 1);
 					if (breakAt && this._content.numChildren % breakAt != 0) {
 						item.x = this.settings.paddingLeft + item.width * (this._content.numChildren % breakAt) +  this.settings.xSpaceBetweenItems * (this._content.numChildren % breakAt - 1);
 						item.y = prevItem.y
@@ -122,9 +127,16 @@ package org.ranapat.scrollpane {
 						item.y = prevItem.y + prevItem.height + this.settings.ySpaceBetweenItems;
 					}
 				} else if (this.mode == ScrollPaneConstants.APPEND_MODE_ROW) {
-					prevItem = this._content.getChildAt(this._content.numChildren - 1);
-					item.y = this.settings.paddingTop;
-					item.x = prevItem.x + prevItem.width + this.settings.xSpaceBetweenItems;
+					if (breakAt && this._content.numChildren % breakAt != 0) {
+						item.x = prevItem.x;
+						item.y = this.settings.paddingTop + item.height * (this._content.numChildren % breakAt) + this.settings.ySpaceBetweenItems * (this._content.numChildren % breakAt - 1);
+					} else {
+						item.y = this.settings.paddingTop;
+						item.x = prevItem.x + prevItem.width + this.settings.xSpaceBetweenItems;
+					}
+				} else if (this.mode == ScrollPaneConstants.APPEND_MODE_FREE) {
+					item.x = 1.5 * Math.random() * (this.width);
+					item.y = 1.5 * Math.random() * (this.height);
 				}
 			}
 			
@@ -335,15 +347,22 @@ package org.ranapat.scrollpane {
 			for (var i:uint = 0; i < length; ++i) {
 				scrollBar = this._scrollbars[i];
 				
-				if (this.mode == ScrollPaneConstants.APPEND_MODE_COLUMN) {
+				if (
+					(this.mode == ScrollPaneConstants.APPEND_MODE_COLUMN || this.mode == ScrollPaneConstants.APPEND_MODE_FREE)
+					&& scrollBar.mode == ScrollBarConstants.MODE_VERTICAL
+				) {
 					scrollBar.offset = this.scrollYPercents;
 					scrollBar.percents = this.visibilityYProportion;
-				} else if (this.mode == ScrollPaneConstants.APPEND_MODE_ROW) {
+				} else if (
+					(this.mode == ScrollPaneConstants.APPEND_MODE_ROW || this.mode == ScrollPaneConstants.APPEND_MODE_FREE)
+					&& scrollBar.mode == ScrollBarConstants.MODE_HORIZONTAL
+				) {
 					scrollBar.offset = this.scrollXPercents;
 					scrollBar.percents = this.visibilityXProportion;
 				}
 				
 				scrollBar.visible = true;
+				
 				if (this.settings.autoHideScrollBarsOnFullBar) {
 					if (scrollBar.offset == 0 && scrollBar.percents == 100) {
 						scrollBar.visible = false;

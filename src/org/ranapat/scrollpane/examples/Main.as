@@ -87,7 +87,10 @@ package org.ranapat.scrollpane.examples {
 			
 			*/
 			
-			var scrollPane:ScrollPane = new ScrollPane();
+			//var scrollPane:ScrollPane = new ScrollPane(ScrollPaneConstants.APPEND_MODE_FREE);
+			//var scrollPane:ScrollPane = new ScrollPane(ScrollPaneConstants.APPEND_MODE_ROW);
+			var scrollPane:ScrollPane = new ScrollPane(ScrollPaneConstants.APPEND_MODE_COLUMN);
+			
 			scrollPane.x = 50;
 			scrollPane.y = 50;
 			scrollPane.width = 720;
@@ -200,10 +203,16 @@ package org.ranapat.scrollpane.examples {
 				tttt.text = i.toString();
 				ss.addChild(tttt);
 				
+				ss.addEventListener(MouseEvent.CLICK, function (e:MouseEvent):void {
+					e.target.graphics.beginFill(Math.random() * 0xffffff, 1);
+					e.target.graphics.drawRect(0, 0, 100, 50);
+					e.target.graphics.endFill();
+				});
+				
 				scrollPane.appendChild(ss, 7);
 			}
 			
-			scrollPane.focus(scrollPane.getChildAt(90));
+			//scrollPane.focus(scrollPane.getChildAt(150));
 			
 			//scrollPane.scrollX = -425;
 			//scrollPane.scrollY = 140;
@@ -216,23 +225,27 @@ package org.ranapat.scrollpane.examples {
 			//scrollPane.scroll(-1);
 			//scrollPane.scrollY = 425;
 			
-			var scroll:ScrollBar = new ScrollBar(ScrollBarConstants.MODE_VERTICAL);
-			//var scroll:ScrollBar = new ScrollBar(ScrollBarConstants.MODE_HORIZONTAL);
+			var scroll1:ScrollBar = new ScrollBar(ScrollBarConstants.MODE_HORIZONTAL);
+			scroll1.x = scrollPane.x;
+			scroll1.y = scrollPane.y + scrollPane.height + 10;
+			scroll1.width = scrollPane.width;
+			scroll1.height = 10;
+			addChild(scroll1);
+			scrollPane.addScrollBar(scroll1);
 			
-			scroll.x = scrollPane.x - 20;
-			scroll.y = scrollPane.y;
-			scroll.width = 10;
-			scroll.height = scrollPane.height;
-			/*
-			scroll.width = 400;
-			scroll.height = 10;
-			*/
-			addChild(scroll)
+			var scroll2:ScrollBar = new ScrollBar(ScrollBarConstants.MODE_VERTICAL);
+			scroll2.x = scrollPane.x - 20;
+			scroll2.y = scrollPane.y;
+			scroll2.width = 10;
+			scroll2.height = scrollPane.height;
+			addChild(scroll2);
+			scrollPane.addScrollBar(scroll2);
 			
-			scroll.offset = scrollPane.scrollYPercents;
-			scroll.percents = scrollPane.visibilityYProportion;
+			//scroll.offset = scrollPane.scrollYPercents;
+			//scroll.percents = scrollPane.visibilityYProportion;
 			
-			scrollPane.addScrollBar(scroll);
+			
+			
 		}
 	}
 	

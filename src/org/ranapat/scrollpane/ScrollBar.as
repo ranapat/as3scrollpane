@@ -32,6 +32,7 @@ package org.ranapat.scrollpane {
 			this._partC = new Sprite();
 			
 			this.mode = _mode;
+			this.percents = 100;
 			
 			this.addEventListener(Event.ADDED_TO_STAGE, this.handleAddedToStage, false, 0, true);
 		}
