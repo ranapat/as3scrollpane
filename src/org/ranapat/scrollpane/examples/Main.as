@@ -91,10 +91,10 @@ package org.ranapat.scrollpane.examples {
 			//var scrollPane:ScrollPane = new ScrollPane(ScrollPaneConstants.APPEND_MODE_ROW);
 			var scrollPane:ScrollPane = new ScrollPane(ScrollPaneConstants.APPEND_MODE_COLUMN);
 			
-			scrollPane.x = 50;
-			scrollPane.y = 50;
-			scrollPane.width = 720;
-			scrollPane.height = 500;
+			scrollPane.x = 150;
+			scrollPane.y = 150;
+			scrollPane.width = 520;
+			scrollPane.height = 300;
 			addChild(scrollPane);
 			
 			var something:Vector.<Sprite> = new Vector.<Sprite>();
@@ -209,7 +209,7 @@ package org.ranapat.scrollpane.examples {
 					e.target.graphics.endFill();
 				});
 				
-				scrollPane.appendChild(ss, 7);
+				TweenLite.delayedCall(0, scrollPane.appendChild, [ ss, 7 ]);
 			}
 			
 			//scrollPane.focus(scrollPane.getChildAt(150));

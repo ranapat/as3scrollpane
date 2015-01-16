@@ -30,6 +30,11 @@ package org.ranapat.scrollpane {
 		private var _latestScrollDeltaY:Number;
 		private var _postScrollFix:Boolean;
 		
+		private var _items:Vector.<DisplayObject>;
+		private var _numChildren:uint;
+		private var _totalWidth:Number;
+		private var _totalHeight:Number;
+		
 		private var _scrollbars:Vector.<ScrollBar>;
 		
 		private var mode:uint;
@@ -51,6 +56,8 @@ package org.ranapat.scrollpane {
 			this._content = new Sprite();
 			this._mask = new Sprite();
 			this._control = new Sprite();
+			
+			this._items = new Vector.<DisplayObject>();
 			
 			this.addEventListener(Event.ADDED_TO_STAGE, this.handleAddedToStage, false, 0, true);
 		}
@@ -76,29 +83,46 @@ package org.ranapat.scrollpane {
 		}
 		
 		override public function getChildAt(index:int):DisplayObject {
-			return this._content.getChildAt(index);
+			return this._items[index];
 		}
 		
 		override public function addChild(item:DisplayObject):DisplayObject {
-			this._content.addChild(item);
+			this.displayAllItems();
 			
+			this._content.addChild(item);
+			this._totalWidth = this._content.width;
+			this._totalHeight = this._content.height;
+			
+			this._items.push(item);
+			++this._numChildren;
+			
+			this.invalidateDisplayList();
 			this.updateScrollBars();
 			
 			return item;
 		}
 		
 		override public function removeChild(item:DisplayObject):DisplayObject {
+			this.displayAllItems();
+			
 			this._content.removeChild(item);
+			this._totalWidth = this._content.width;
+			this._totalHeight = this._content.height;
+			
+			this._items.splice(this._items.indexOf(item), 1);
+			--this._numChildren;
 
 			this.scrollX = 0;
 			this.scrollY = 0;
+			
+			this.invalidateDisplayList();
 			this.updateScrollBars();
 
 			return item;
 		}
 		
 		override public function get numChildren():int {
-			return this._content.numChildren;
+			return this._numChildren;
 		}
 		
 		public function removeAllChildren():Vector.<DisplayObject> {
@@ -106,30 +130,34 @@ package org.ranapat.scrollpane {
 			while (this.numChildren > 0) {
 				result.push(this.removeChild(this.getChildAt(this.numChildren - 1)));
 			}
+			
+			this._numChildren = 0;
+			this._items.splice(0, this.numChildren);
+			
 			return result;
 		}
 		
 		public function appendChild(item:DisplayObject, breakAt:uint = 1):DisplayObject {
-			if (this._content.numChildren == 0) {
+			if (this.numChildren == 0) {
 				item.x = this.settings.paddingLeft;
 				item.y = this.settings.paddingTop;
 			} else {
 				var prevItem:DisplayObject;
 				
-				prevItem = this._content.getChildAt(this._content.numChildren - 1);
+				prevItem = this.getChildAt(this.numChildren - 1);
 				
 				if (this.mode == ScrollPaneConstants.APPEND_MODE_COLUMN) {
-					if (breakAt && this._content.numChildren % breakAt != 0) {
-						item.x = this.settings.paddingLeft + item.width * (this._content.numChildren % breakAt) +  this.settings.xSpaceBetweenItems * (this._content.numChildren % breakAt - 1);
+					if (breakAt && this.numChildren % breakAt != 0) {
+						item.x = this.settings.paddingLeft + item.width * (this.numChildren % breakAt) +  this.settings.xSpaceBetweenItems * (this.numChildren % breakAt - 1);
 						item.y = prevItem.y
 					} else {
 						item.x = this.settings.paddingLeft;
 						item.y = prevItem.y + prevItem.height + this.settings.ySpaceBetweenItems;
 					}
 				} else if (this.mode == ScrollPaneConstants.APPEND_MODE_ROW) {
-					if (breakAt && this._content.numChildren % breakAt != 0) {
+					if (breakAt && this.numChildren % breakAt != 0) {
 						item.x = prevItem.x;
-						item.y = this.settings.paddingTop + item.height * (this._content.numChildren % breakAt) + this.settings.ySpaceBetweenItems * (this._content.numChildren % breakAt - 1);
+						item.y = this.settings.paddingTop + item.height * (this.numChildren % breakAt) + this.settings.ySpaceBetweenItems * (this.numChildren % breakAt - 1);
 					} else {
 						item.y = this.settings.paddingTop;
 						item.x = prevItem.x + prevItem.width + this.settings.xSpaceBetweenItems;
@@ -151,6 +179,8 @@ package org.ranapat.scrollpane {
 		
 		public function set scrollX(value:Number):void {
 			this._content.x = -value;
+			
+			this.invalidateDisplayList();
 		}
 		
 		public function get scrollX():Number {
@@ -173,6 +203,8 @@ package org.ranapat.scrollpane {
 		
 		public function set scrollY(value:Number):void {
 			this._content.y = -value;
+			
+			this.invalidateDisplayList();
 		}
 		
 		public function get scrollY():Number {
@@ -202,6 +234,7 @@ package org.ranapat.scrollpane {
 					x: this._content.x + value,
 					ease: ease != null? ease : Linear.easeNone,
 					easeParams: easeParams,
+					onUpdate: this.invalidateDisplayList,
 					onComplete: this.handleTweenComplete
 				}
 			);
@@ -216,6 +249,7 @@ package org.ranapat.scrollpane {
 					y: this._content.y + value,
 					ease: ease != null? ease : Linear.easeNone,
 					easeParams: easeParams,
+					onUpdate: this.invalidateDisplayList,
 					onComplete: this.handleTweenComplete
 				}
 			);
@@ -248,6 +282,7 @@ package org.ranapat.scrollpane {
 							y: this._content.y + deltaY,
 							ease: ease != null? ease : settings.defaultTweenEase,
 							easeParams: easeParams,
+							onUpdate: this.invalidateDisplayList,
 							onComplete: this.handleTweenComplete
 						}
 					);
@@ -262,6 +297,7 @@ package org.ranapat.scrollpane {
 					y: Number.NaN,
 					ease: ease != null? ease : Linear.easeNone,
 					easeParams: easeParams,
+					onUpdate: this.invalidateDisplayList,
 					onComplete: this.handleTweenComplete
 				};
 				
@@ -300,17 +336,17 @@ package org.ranapat.scrollpane {
 			var scrollTo:uint;
 			if (items >= 0) {
 				var latestItem:DisplayObject = this.latestFullyVisibleItem;
-				var latestItemIndex:uint = this._content.getChildIndex(latestItem);
+				var latestItemIndex:uint = this._items.indexOf(latestItem);
 				
-				scrollTo = (latestItemIndex + items + 1) > this._content.numChildren? (this._content.numChildren - 1) : (latestItemIndex + items);
+				scrollTo = (latestItemIndex + items + 1) > this.numChildren? (this.numChildren - 1) : (latestItemIndex + items);
 			} else if (items < 0) {
 				var firstItem:DisplayObject = this.firstFullyVisibleItem;
-				var firstItemIndex:uint = this._content.getChildIndex(firstItem);
+				var firstItemIndex:uint = this._items.indexOf(firstItem);
 				
 				scrollTo = (latestItemIndex - items) >= 0? (latestItemIndex - items) : 0;
 			}
 			
-			this.focus(this._content.getChildAt(scrollTo), ease, duration, easeParams);
+			this.focus(this.getChildAt(scrollTo), ease, duration, easeParams);
 		}
 		
 		public function invalidate(scrollDirectionX:uint = ScrollPaneConstants.DIRECTION_NONE, scrollDirectionY:uint = ScrollPaneConstants.DIRECTION_NONE):void {
@@ -373,20 +409,20 @@ package org.ranapat.scrollpane {
 		}
 		
 		private function get firstPartiallyVisibleItem():DisplayObject {
-			var length:uint = this._content.numChildren;
+			var length:uint = this.numChildren;
 			for (var i:uint = 0; i < length; ++i) {
-				if (this.isItemPartiallyVisibile(this._content.getChildAt(i))) {
-					return this._content.getChildAt(i);
+				if (this.isItemPartiallyVisibile(this.getChildAt(i))) {
+					return this.getChildAt(i);
 				}
 			}
 			return null;
 		}
 		
 		private function get firstFullyVisibleItem():DisplayObject {
-			var length:uint = this._content.numChildren;
+			var length:uint = this.numChildren;
 			for (var i:uint = 0; i < length; ++i) {
-				if (this.isItemFullyVisibile(this._content.getChildAt(i))) {
-					return this._content.getChildAt(i);
+				if (this.isItemFullyVisibile(this.getChildAt(i))) {
+					return this.getChildAt(i);
 				}
 			}
 			return null;
@@ -394,36 +430,36 @@ package org.ranapat.scrollpane {
 		
 		private function get latestPartiallyVisibleItem():DisplayObject {
 			var alreadyVisible:Boolean;
-			var length:uint = this._content.numChildren;
+			var length:uint = this.numChildren;
 			for (var i:uint = 0; i < length; ++i) {
-				if (!alreadyVisible && this.isItemPartiallyVisibile(this._content.getChildAt(i))) {
+				if (!alreadyVisible && this.isItemPartiallyVisibile(this.getChildAt(i))) {
 					alreadyVisible = true;
-				} else if (alreadyVisible && !this.isItemPartiallyVisibile(this._content.getChildAt(i))) {
-					return this._content.getChildAt(i - 1);
+				} else if (alreadyVisible && !this.isItemPartiallyVisibile(this.getChildAt(i))) {
+					return this.getChildAt(i - 1);
 				}
 			}
-			return length > 0? this._content.getChildAt(length - 1) : null;
+			return length > 0? this.getChildAt(length - 1) : null;
 		}
 		
 		private function get latestFullyVisibleItem():DisplayObject {
 			var alreadyVisible:Boolean;
-			var length:uint = this._content.numChildren;
+			var length:uint = this.numChildren;
 			for (var i:uint = 0; i < length; ++i) {
-				if (!alreadyVisible && this.isItemFullyVisibile(this._content.getChildAt(i))) {
+				if (!alreadyVisible && this.isItemFullyVisibile(this.getChildAt(i))) {
 					alreadyVisible = true;
-				} else if (alreadyVisible && !this.isItemFullyVisibile(this._content.getChildAt(i))) {
-					return this._content.getChildAt(i - 1);
+				} else if (alreadyVisible && !this.isItemFullyVisibile(this.getChildAt(i))) {
+					return this.getChildAt(i - 1);
 				}
 			}
-			return length > 0? this._content.getChildAt(length - 1) : null;
+			return length > 0? this.getChildAt(length - 1) : null;
 		}
 		
 		private function get totalWidth():Number {
-			return this._content.width;
+			return this._totalWidth;
 		}
 		
 		private function get totalHeight():Number {
-			return this._content.height;
+			return this._totalHeight;
 		}
 		
 		private function isItemPartiallyVisibile(item:DisplayObject):Boolean {
@@ -493,12 +529,12 @@ package org.ranapat.scrollpane {
 		}
 		
 		private function getItemUnderPoint(x:Number, y:Number):DisplayObject {
-			var length:uint = this._content.numChildren;
+			var length:uint = this.numChildren;
 			var tmp:DisplayObject;
 			var offsetX:Number = x - this._content.x;
 			var offsetY:Number = y - this._content.y;
 			for (var i:uint = 0; i < length; ++i) {
-				tmp = this._content.getChildAt(i);
+				tmp = this.getChildAt(i);
 				
 				if (
 					tmp.x <= offsetX && tmp.x + tmp.width > offsetX
@@ -516,7 +552,7 @@ package org.ranapat.scrollpane {
 			var ease:Function = istantMode? null : this.settings.scrollAutoFocusTweenEase;
 			var duration:Number = istantMode? null : this.settings.scrollAutoFocusTweenDuration;
 			
-			if (this.totalHeight > this.height && this._content.numChildren > 1 && this.settings.scrollSnapToItems) {
+			if (this.totalHeight > this.height && this.numChildren > 1 && this.settings.scrollSnapToItems) {
 				if (this._scrollDirectionY == ScrollPaneConstants.DIRECTION_DOWN) {
 					item = this.firstPartiallyVisibleItem;
 					snapTo = ScrollPaneConstants.SNAP_TO_TOP;
@@ -542,7 +578,7 @@ package org.ranapat.scrollpane {
 						snapTo = ScrollPaneConstants.SNAP_TO_BOTTOM;
 					}
 				} else if (this._content.y + this.totalHeight < this.height && this.totalHeight <= this.height) {
-					item = this._content.numChildren > 0? this._content.getChildAt(0) : null
+					item = this.numChildren > 0? this.getChildAt(0) : null
 					snapTo = ScrollPaneConstants.SNAP_TO_TOP;
 				} else {
 					ease = this.settings.scrollOverDragTweenEase;
@@ -611,6 +647,83 @@ package org.ranapat.scrollpane {
 			}
 		}
 		
+		private function displayAllItems():void {
+			var length:uint = this.numChildren;
+			var item:DisplayObject;
+			
+			for (var i:uint = 0; i < length; ++i) {
+				item = this.getChildAt(i);
+				
+				if (!item.parent) {
+					this._content.addChild(item);
+				}
+			}
+		}
+		
+		private function invalidateDisplayList():void {
+			var length:uint = this.numChildren;
+			var item:DisplayObject;
+			
+			var contentX:Number = this._content.x;
+			var contentY:Number = this._content.y;
+			var contentWidth:Number = this._width;
+			var contentHeight:Number = this._height;
+			
+			var totalAdds:uint;
+			var totalRemoves:uint;
+			
+			for (var i:uint = 0; i < length; ++i) {
+				item = this.getChildAt(i);
+				
+				if (
+					item.y + item.height < -1 * contentY
+				) {
+					if (item.parent) {
+						++totalRemoves;
+						this._content.removeChild(item);
+					}
+					continue;
+				} else if (
+					item.y > -1 * contentY + contentHeight
+				) {
+					if (item.parent) {
+						++totalRemoves;
+						this._content.removeChild(item);
+					}
+					continue;
+				} else {
+					//
+				}
+				
+				if (
+					item.x + item.width < -1 * contentX
+				) {
+					if (item.parent) {
+						++totalRemoves;
+						this._content.removeChild(item);
+					}
+					continue;
+				} else if (
+					item.x > -1 * contentX + contentWidth
+				) {
+					if (item.parent) {
+						++totalRemoves;
+						this._content.removeChild(item);
+					}
+					continue;
+				} else {
+					//
+				}
+				
+				if (!item.parent) {
+					++totalAdds;
+					this._content.addChild(item);
+				}
+			}
+			
+			trace("totalAdds: " + totalAdds + "; totalRemoves: " + totalRemoves)
+		}
+		
 		private function handleTweenComplete():void {
 			this._offsetToApply = null;
 			this.updateScrollBars();
@@ -642,7 +755,8 @@ package org.ranapat.scrollpane {
 			this._control.x = 0;
 			this._control.y = 0;
 			
-			this._content.mask = this._mask;
+			//this._content.mask = this._mask;
+			this._mask.alpha = .4;
 			
 			this.updateSize();
 			
