@@ -90,7 +90,7 @@ package org.ranapat.scrollpane.examples {
 			var scrollPane:ScrollPane = new ScrollPane();
 			scrollPane.x = 50;
 			scrollPane.y = 50;
-			scrollPane.width = 700;
+			scrollPane.width = 720;
 			scrollPane.height = 500;
 			addChild(scrollPane);
 			
@@ -200,8 +200,11 @@ package org.ranapat.scrollpane.examples {
 				tttt.text = i.toString();
 				ss.addChild(tttt);
 				
-				scrollPane.appendChild(ss, 5);
+				scrollPane.appendChild(ss, 7);
 			}
+			
+			scrollPane.focus(scrollPane.getChildAt(90));
+			
 			//scrollPane.scrollX = -425;
 			//scrollPane.scrollY = 140;
 			
