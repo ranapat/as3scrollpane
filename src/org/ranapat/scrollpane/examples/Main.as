@@ -10,6 +10,7 @@ package org.ranapat.scrollpane.examples {
 	import flash.events.MouseEvent;
 	import flash.text.TextField;
 	import flash.text.TextFormat;
+	import flash.text.TextFormatAlign;
 	import org.ranapat.scrollpane.ScrollBar;
 	import org.ranapat.scrollpane.ScrollBarConstants;
 	import org.ranapat.scrollpane.ScrollPane;
@@ -175,9 +176,31 @@ package org.ranapat.scrollpane.examples {
 				*/
 				
 				//scrollPane.appendChild(s);
-				scrollPane.appendChild(btn);
+				//scrollPane.appendChild(btn);
 				
 				something.push(s);
+				
+				
+				var ss:Sprite = new Sprite();
+					
+				ss.graphics.beginFill(Math.random() * 0xffffff, 1);
+				ss.graphics.drawRect(0, 0, 100, 50);
+				ss.graphics.endFill();
+				
+				var tttt:TextField = new TextField();
+				
+				tttt.width = ss.width;
+				tttt.height = ss.height;
+				tttt.mouseEnabled = false;
+				var ttttf:TextFormat = new TextFormat();
+				ttttf.align = TextFormatAlign.CENTER;
+				ttttf.color = 0xffffff;
+				ttttf.size = 20;
+				tttt.defaultTextFormat = ttttf;
+				tttt.text = i.toString();
+				ss.addChild(tttt);
+				
+				scrollPane.appendChild(ss, 5);
 			}
 			//scrollPane.scrollX = -425;
 			//scrollPane.scrollY = 140;

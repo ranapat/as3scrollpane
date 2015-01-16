@@ -105,7 +105,7 @@ package org.ranapat.scrollpane {
 			return result;
 		}
 		
-		public function appendChild(item:DisplayObject):DisplayObject {
+		public function appendChild(item:DisplayObject, breakAt:uint = 1):DisplayObject {
 			if (this._content.numChildren == 0) {
 				item.x = this.settings.paddingLeft;
 				item.y = this.settings.paddingTop;
@@ -114,8 +114,13 @@ package org.ranapat.scrollpane {
 				
 				if (this.mode == ScrollPaneConstants.APPEND_MODE_COLUMN) {
 					prevItem = this._content.getChildAt(this._content.numChildren - 1);
-					item.x = this.settings.paddingLeft;
-					item.y = prevItem.y + prevItem.height + this.settings.ySpaceBetweenItems;
+					if (breakAt && this._content.numChildren % breakAt != 0) {
+						item.x = this.settings.paddingLeft + item.width * (this._content.numChildren % breakAt) +  this.settings.xSpaceBetweenItems * (this._content.numChildren % breakAt - 1);
+						item.y = prevItem.y
+					} else {
+						item.x = this.settings.paddingLeft;
+						item.y = prevItem.y + prevItem.height + this.settings.ySpaceBetweenItems;
+					}
 				} else if (this.mode == ScrollPaneConstants.APPEND_MODE_ROW) {
 					prevItem = this._content.getChildAt(this._content.numChildren - 1);
 					item.y = this.settings.paddingTop;
