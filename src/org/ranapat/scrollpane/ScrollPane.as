@@ -95,7 +95,7 @@ package org.ranapat.scrollpane {
 			this._totalWidth = this._content.width;
 			this._totalHeight = this._content.height;
 			
-			this._items.push(item);
+			this._items[this._items.length] = item;
 			++this._numChildren;
 			
 			this.invalidateDisplayList();
@@ -117,7 +117,7 @@ package org.ranapat.scrollpane {
 			length = this.numChildren;
 			for (i = 0; i < length; ++i) {
 				if (i >= beginIndex && i <= endIndex) {
-					itemsToDelete.push(this.getChildAt(i));
+					itemsToDelete[itemsToDelete.length] = this.getChildAt(i);
 				}
 			}
 			
@@ -147,11 +147,8 @@ package org.ranapat.scrollpane {
 						previous = this.getChildAt(i - 1);
 						current = this.getChildAt(i);
 						
-						trace(i + " .. " + current.x + " .. " + previous.x)
-						
 						current.x = previous.x;
 						current.y = previous.y;
-						
 					}
 				} else if (this.mode == ScrollPaneConstants.APPEND_MODE_FREE) {
 					//
@@ -182,7 +179,7 @@ package org.ranapat.scrollpane {
 		public function removeAllChildren():Vector.<DisplayObject> {
 			var result:Vector.<DisplayObject> = new Vector.<DisplayObject>();
 			while (this._items.length > 0) {
-				result.push(this.removeChild(this.getChildAt(this._items.length - 1)));
+				result[result.length] = this.removeChild(this.getChildAt(this._items.length - 1));
 			}
 			
 			return result;
@@ -409,7 +406,7 @@ package org.ranapat.scrollpane {
 		}
 		
 		public function addScrollBar(scrollBar:ScrollBar):void {
-			this._scrollbars.push(scrollBar);
+			this._scrollbars[this._scrollbars.length] = scrollBar;
 			
 			scrollBar.scrollPane = this;
 			
