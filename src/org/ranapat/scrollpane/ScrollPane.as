@@ -31,6 +31,7 @@ package org.ranapat.scrollpane {
 		private var _latestScrollDeltaX:Number;
 		private var _latestScrollDeltaY:Number;
 		private var _postScrollFix:Boolean;
+		private var _removeAllChildren:Boolean;
 		
 		private var _items:Vector.<DisplayObject>;
 		private var _numChildren:uint;
@@ -112,6 +113,8 @@ package org.ranapat.scrollpane {
 		}
 		
 		override public function removeChildren(beginIndex:int = 0, endIndex:int = 2147483647):void {
+			this._removeAllChildren = true;
+			
 			var itemsToDelete:Vector.<DisplayObject> = new Vector.<DisplayObject>();
 			var i:uint;
 			var length:uint;
@@ -127,6 +130,8 @@ package org.ranapat.scrollpane {
 			for (i = 0; i < length; ++i) {
 				this.removeChild(itemsToDelete[i]);
 			}
+			
+			this._removeAllChildren = false;
 		}
 		
 		override public function removeChildAt(index:int):DisplayObject {
@@ -171,6 +176,8 @@ package org.ranapat.scrollpane {
 				this.updateScrollBars();
 			}
 
+			this.revalidateList(this._removeAllChildren? true : false);
+			
 			return item;
 		}
 		
