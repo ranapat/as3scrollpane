@@ -1,6 +1,7 @@
 package org.ranapat.scrollpane.examples {
 	import com.greensock.easing.Elastic;
 	import com.greensock.TweenLite;
+	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
 	import flash.display.MovieClip;
 	import flash.display.Shape;
@@ -88,8 +89,8 @@ package org.ranapat.scrollpane.examples {
 			*/
 			
 			//var scrollPane:ScrollPane = new ScrollPane(ScrollPaneConstants.APPEND_MODE_FREE);
-			//var scrollPane:ScrollPane = new ScrollPane(ScrollPaneConstants.APPEND_MODE_ROW);
-			var scrollPane:ScrollPane = new ScrollPane(ScrollPaneConstants.APPEND_MODE_COLUMN);
+			//var scrollPane:ScrollPane = new ScrollPane(ScrollPaneConstants.APPEND_MODE_ROW, 5);
+			var scrollPane:ScrollPane = new ScrollPane(ScrollPaneConstants.APPEND_MODE_COLUMN, 5);
 			
 			scrollPane.x = 150;
 			scrollPane.y = 150;
@@ -98,7 +99,7 @@ package org.ranapat.scrollpane.examples {
 			addChild(scrollPane);
 			
 			var something:Vector.<Sprite> = new Vector.<Sprite>();
-			for (var i:uint = 0; i < 200; ++i) {
+			for (var i:uint = 0; i < 60; ++i) {
 				var s:Sprite = new Sprite();
 					
 				s.graphics.beginFill(Math.random() * 0xffffff, 1);
@@ -191,7 +192,7 @@ package org.ranapat.scrollpane.examples {
 				ss.graphics.endFill();
 				
 				var tttt:TextField = new TextField();
-				
+				tttt.name = "tttt";
 				tttt.width = ss.width;
 				tttt.height = ss.height;
 				tttt.mouseEnabled = false;
@@ -204,12 +205,17 @@ package org.ranapat.scrollpane.examples {
 				ss.addChild(tttt);
 				
 				ss.addEventListener(MouseEvent.CLICK, function (e:MouseEvent):void {
+					/*
 					e.target.graphics.beginFill(Math.random() * 0xffffff, 1);
 					e.target.graphics.drawRect(0, 0, 100, 50);
 					e.target.graphics.endFill();
+					*/
+					//trace(scrollPane.removeAllChildren().length);
+					scrollPane.removeChild(e.target as DisplayObject);
 				});
 				
-				TweenLite.delayedCall(0, scrollPane.appendChild, [ ss, 7 ]);
+				//TweenLite.delayedCall(0, scrollPane.appendChild, [ ss ]);
+				scrollPane.appendChild(ss);
 			}
 			
 			//scrollPane.focus(scrollPane.getChildAt(150));
