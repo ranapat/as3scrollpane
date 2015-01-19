@@ -27,7 +27,6 @@ package org.ranapat.scrollpane {
 		public static var SCROLL_LOCK_Y:Boolean = false;
 		public static var SCROLL_SNAP_TO_ITEMS:Boolean = false;
 		
-		public static var DRAG_SCROLL:Boolean = false;
 		public static var DRAG_SCROLL_AUTO:Boolean = true;
 		
 		public static var POST_FORCE_MIN_DELTA:Number = 15;
@@ -94,7 +93,6 @@ package org.ranapat.scrollpane {
 			this.scrollLockY = ScrollPaneSettings.SCROLL_LOCK_Y;
 			this.scrollSnapToItems = ScrollPaneSettings.SCROLL_SNAP_TO_ITEMS;
 			
-			this.dragScroll = ScrollPaneSettings.DRAG_SCROLL;
 			this.dragScrollAuto = ScrollPaneSettings.DRAG_SCROLL_AUTO;
 			
 			this.postForceMinDelta = ScrollPaneSettings.POST_FORCE_MIN_DELTA;

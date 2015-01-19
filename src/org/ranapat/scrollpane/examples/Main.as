@@ -204,6 +204,26 @@ package org.ranapat.scrollpane.examples {
 				tttt.text = i.toString();
 				ss.addChild(tttt);
 				
+				var up:Sprite = new Sprite();
+				up.graphics.beginFill(0xff0000, 1);
+				up.graphics.drawRect(0, 0, 40, 40);
+				up.graphics.endFill();
+				
+				var over:Sprite = new Sprite();
+				over.graphics.beginFill(0xff00ff, 1);
+				over.graphics.drawRect(0, 0, 40, 40);
+				over.graphics.endFill();
+				
+				var down:Sprite = new Sprite();
+				down.graphics.beginFill(0x0000ff, 1);
+				down.graphics.drawRect(0, 0, 40, 40);
+				down.graphics.endFill();
+				
+				var bbbb:SimpleButton = new SimpleButton(up, over, down, down);
+				ss.addChild(bbbb);
+				bbbb.addEventListener(MouseEvent.CLICK, function (e:MouseEvent):void { trace("clicked") } );
+				bbbb.mouseEnabled = true;
+				
 				ss.addEventListener(MouseEvent.CLICK, function (e:MouseEvent):void {
 					/*
 					e.target.graphics.beginFill(Math.random() * 0xffffff, 1);
@@ -211,7 +231,16 @@ package org.ranapat.scrollpane.examples {
 					e.target.graphics.endFill();
 					*/
 					//trace(scrollPane.removeAllChildren().length);
-					scrollPane.removeChild(e.target as DisplayObject);
+					//scrollPane.removeChild(e.target as DisplayObject);
+				});
+				ss.addEventListener(MouseEvent.MOUSE_MOVE, function (e:MouseEvent):void {
+					/*
+					e.target.graphics.beginFill(Math.random() * 0xffffff, 1);
+					e.target.graphics.drawRect(0, 0, 100, 50);
+					e.target.graphics.endFill();
+					*/
+					//trace(scrollPane.removeAllChildren().length);
+					//trace("mouse is over... " + this)
 				});
 				
 				//TweenLite.delayedCall(0, scrollPane.appendChild, [ ss ]);

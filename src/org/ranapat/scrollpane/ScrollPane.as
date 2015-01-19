@@ -27,7 +27,6 @@ package org.ranapat.scrollpane {
 		private var _latestMouseDownPoint:Point;
 		private var _scrollDirectionX:uint;
 		private var _scrollDirectionY:uint;
-		private var _latestMouseUpTarget:Object;
 		private var _latestScrollDeltaX:Number;
 		private var _latestScrollDeltaY:Number;
 		private var _postScrollFix:Boolean;
@@ -427,7 +426,7 @@ package org.ranapat.scrollpane {
 		}
 		
 		protected function redrawAssets():void {
-			this._background.graphics.beginFill(0xff0000, 1);
+			this._background.graphics.beginFill(0xff00ff, 1);
 			this._background.graphics.drawRect(0, 0, this.width, this.height);
 			this._background.graphics.endFill();
 		}
@@ -735,7 +734,6 @@ package org.ranapat.scrollpane {
 				this._control.addEventListener(MouseEvent.MOUSE_DOWN, this.handleControlMouseDown, false, 0, true);
 				this._control.stage.addEventListener(MouseEvent.MOUSE_UP, this.handleControlMouseUp, false, 0, true);
 				this._control.addEventListener(MouseEvent.MOUSE_MOVE, this.handleControlMouseMove, false, 0, true);
-				this._control.addEventListener(MouseEvent.CLICK, this.handleControlClick, false, 0, true);
 			}
 		}
 		
@@ -744,7 +742,6 @@ package org.ranapat.scrollpane {
 				this._control.removeEventListener(MouseEvent.MOUSE_DOWN, this.handleControlMouseDown);
 				this._control.stage.removeEventListener(MouseEvent.MOUSE_UP, this.handleControlMouseUp);
 				this._control.removeEventListener(MouseEvent.MOUSE_MOVE, this.handleControlMouseMove);
-				this._control.removeEventListener(MouseEvent.CLICK, this.handleControlClick);
 				
 				super.removeChild(this._control);
 			}
@@ -863,9 +860,6 @@ package org.ranapat.scrollpane {
 				this.stage.addEventListener(MouseEvent.MOUSE_UP, this.handleStageMouseUp, false, 0, true);
 				this.stage.addEventListener(MouseEvent.MOUSE_MOVE, this.handleStageMouseMove, false, 0, true);
 			}
-			if (this.settings.dragScroll) {
-				this.dragScrollEnabled();
-			}
 		}
 		
 		private function handleRemovedFromStage(e:Event):void {
@@ -925,14 +919,6 @@ package org.ranapat.scrollpane {
 		private function handleControlMouseUp(e:MouseEvent):void {
 			if (this._mouseDownMode) {
 				this.revalidateList();
-				
-				if (this._mouseMovedMode) {
-					this._latestMouseUpTarget = e.target;
-				} else {
-					this._latestMouseUpTarget = null;
-				}
-			} else {
-				this._latestMouseUpTarget = null;
 			}
 			
 			this.updateScrollBars();
@@ -982,18 +968,6 @@ package org.ranapat.scrollpane {
 				this.updateScrollBars();
 			}
 		}
-		
-		private function handleControlClick(e:MouseEvent):void {
-			if (!this._mouseDownMode && this._latestMouseUpTarget != e.target) {
-				var objectOnClick:DisplayObject = this.getItemUnderPoint(e.localX, e.localY);
-				if (objectOnClick) {
-					objectOnClick.dispatchEvent(new MouseEvent(MouseEvent.CLICK, true, false, e.localX - objectOnClick.x, e.localY - objectOnClick.y));
-				}
-			}
-			
-			this._latestMouseUpTarget = null;
-		}
-		
 	}
 
 }
