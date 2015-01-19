@@ -31,7 +31,7 @@ package org.ranapat.scrollpane {
 		public static var DRAG_SCROLL_AUTO:Boolean = true;
 		
 		public static var POST_FORCE_MIN_DELTA:Number = 15;
-		public static var POST_FORCE_ONE_ITEM_SIZE:Number = 5;
+		public static var POST_FORCE_ONE_ITEM_SIZE:Number = 1;
 		
 		public static var AUTO_HIDE_SCROLL_BAR_ON_FULL_BAR:Boolean = true;
 		public static var AUTO_HIDE_SCROLL_BARS_ON_TIMEOUT:Boolean = true;

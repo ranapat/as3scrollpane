@@ -8,6 +8,8 @@ package org.ranapat.scrollpane {
 	import flash.geom.Point;
 	
 	public class ScrollPane extends Sprite {
+		private static const DEBUG_MODE:Boolean = true;
+		
 		private var _background:Sprite;
 		private var _content:Sprite;
 		private var _mask:Sprite;
@@ -172,6 +174,10 @@ package org.ranapat.scrollpane {
 			return item;
 		}
 		
+		override public function getChildIndex(child:DisplayObject):int {
+			return this._items.indexOf(child);
+		}
+		
 		override public function get numChildren():int {
 			return this._numChildren;
 		}
@@ -304,7 +310,7 @@ package org.ranapat.scrollpane {
 		}
 		
 		public function focus(item:DisplayObject, ease:Function = null, duration:Number = Number.NaN, easeParams:Array = null):void {
-			if (item.parent == this._content) {
+			if (this._items.indexOf(item) >= 0) {
 				if (!this.isItemFullyVisibile(item)) {
 					var deltaX:Number = 0;
 					var deltaY:Number = 0;
@@ -339,7 +345,7 @@ package org.ranapat.scrollpane {
 		}
 		
 		public function snap(item:DisplayObject, mode:uint, ease:Function = null, duration:Number = Number.NaN, easeParams:Array = null):void {
-			if (item.parent == this._content) {
+			if (this._items.indexOf(item) >= 0) {
 				var params:Object = {
 					x: Number.NaN,
 					y: Number.NaN,
@@ -350,21 +356,15 @@ package org.ranapat.scrollpane {
 				};
 				
 				if (mode == ScrollPaneConstants.SNAP_TO_TOP) {
-					if (!this.settings.scrollLockX) {
-						params.x = item.x - this.settings.paddingLeft;
-					}
-					if (!this.settings.scrollLockY) {
-						params.y = -(item.y - this.settings.paddingTop);
-					}
+					params.y = -(item.y - this.settings.paddingTop);
 				} else if (mode == ScrollPaneConstants.SNAP_TO_BOTTOM) {
-					if (!this.settings.scrollLockX) {
-						params.x = item.x - this.settings.paddingLeft;
-					}
-					if (!this.settings.scrollLockY) {
-						params.y = this.height - item.y - item.height - this.settings.paddingTop;
-					}
+					params.y = this.height - item.y - item.height - this.settings.paddingTop;
+				} else if (mode == ScrollPaneConstants.SNAP_TO_LEFT) {
+					params.x = -(item.x - this.settings.paddingLeft);
+				} else if (mode == ScrollPaneConstants.SNAP_TO_RIGHT) {
+					params.x = this.width - item.x - item.width - this.settings.paddingLeft;
 				} else {
-					throw new Error("No more modes are implemented so far! Sorry :(");
+					throw new Error("Mode not implement! Sorry :(");
 				}
 				
 				if (!isNaN(params.x) || !isNaN(params.y)) {
@@ -600,7 +600,25 @@ package org.ranapat.scrollpane {
 			var ease:Function = istantMode? null : this.settings.scrollAutoFocusTweenEase;
 			var duration:Number = istantMode? null : this.settings.scrollAutoFocusTweenDuration;
 			
-			if (this.totalHeight > this.height && this.numChildren > 1 && this.settings.scrollSnapToItems) {
+			if (this._content.y > 0) {
+				item = this.firstPartiallyVisibleItem;
+				snapTo = ScrollPaneConstants.SNAP_TO_TOP;
+			} else if (this._content.y + this.totalHeight < this.height && this.totalHeight > this.height) {
+				item = this.latestPartiallyVisibleItem;
+				snapTo = ScrollPaneConstants.SNAP_TO_BOTTOM;
+			} else if (this._content.y + this.totalHeight < this.height && this.totalHeight <= this.height) {
+				item = this.numChildren > 0? this.getChildAt(0) : null
+				snapTo = ScrollPaneConstants.SNAP_TO_TOP;
+			} else if (this._content.x > 0) {
+				item = this.firstPartiallyVisibleItem;
+				snapTo = ScrollPaneConstants.SNAP_TO_LEFT;
+			} else if (this._content.x + this.totalWidth < this.width && this.totalWidth > this.width) {
+				item = this.latestPartiallyVisibleItem;
+				snapTo = ScrollPaneConstants.SNAP_TO_RIGHT;
+			} else if (this._content.x + this.totalWidth < this.width && this.totalWidth <= this.width) {
+				item = this.numChildren > 0? this.getChildAt(0) : null
+				snapTo = ScrollPaneConstants.SNAP_TO_LEFT;
+			} else if (this._scrollDirectionY != ScrollPaneConstants.DIRECTION_NONE && this.totalHeight > this.height && this.numChildren > 1 && this.settings.scrollSnapToItems) {
 				if (this._scrollDirectionY == ScrollPaneConstants.DIRECTION_DOWN) {
 					item = this.firstPartiallyVisibleItem;
 					snapTo = ScrollPaneConstants.SNAP_TO_TOP;
@@ -610,62 +628,54 @@ package org.ranapat.scrollpane {
 				} else {
 					snapTo = ScrollPaneConstants.SNAP_TO_BOTTOM;
 				}
-			} else {
-				if (this._content.y > 0) {
+			} else if (this._scrollDirectionX != ScrollPaneConstants.DIRECTION_NONE && this.totalWidth > this.width && this.numChildren > 1 && this.settings.scrollSnapToItems) {
+				if (this._scrollDirectionX == ScrollPaneConstants.DIRECTION_RIGHT) {
 					item = this.firstPartiallyVisibleItem;
-					snapTo = ScrollPaneConstants.SNAP_TO_TOP;
-				} else if (this._content.y + this.totalHeight < this.height && this.totalHeight > this.height) {
-					if (this._scrollDirectionY == ScrollPaneConstants.DIRECTION_DOWN) {
-						item = this.firstPartiallyVisibleItem;
-						snapTo = ScrollPaneConstants.SNAP_TO_TOP;
-					} else if (this._scrollDirectionY == ScrollPaneConstants.DIRECTION_UP) {
-						item = this.latestPartiallyVisibleItem;
-						snapTo = ScrollPaneConstants.SNAP_TO_BOTTOM;
-					} else {
-						item = this.latestPartiallyVisibleItem;
-						snapTo = ScrollPaneConstants.SNAP_TO_BOTTOM;
-					}
-				} else if (this._content.y + this.totalHeight < this.height && this.totalHeight <= this.height) {
-					item = this.numChildren > 0? this.getChildAt(0) : null
-					snapTo = ScrollPaneConstants.SNAP_TO_TOP;
+					snapTo = ScrollPaneConstants.SNAP_TO_LEFT;
+				} else if (this._scrollDirectionX == ScrollPaneConstants.DIRECTION_LEFT) {
+					item = this.latestPartiallyVisibleItem;
+					snapTo = ScrollPaneConstants.SNAP_TO_RIGHT;
 				} else {
-					ease = this.settings.scrollOverDragTweenEase;
-					duration = this.settings.scrollOverDragTweenDuration;
-							
-					if (this._latestScrollDeltaY > 0) {
-						if (this._latestScrollDeltaY > this.settings.postForceMinDelta) {
-							var currentTop:DisplayObject = this.firstPartiallyVisibleItem;
-							var currentTopIndex:int = currentTop.parent.getChildIndex(currentTop);
-							
-							if (currentTopIndex > 0) {
-								currentTopIndex += int(this._latestScrollDeltaY / this.settings.postForceOneItemSize);
-								currentTopIndex = currentTopIndex < 0? 0 : currentTopIndex;
-								currentTopIndex = currentTopIndex >= currentTop.parent.numChildren? currentTop.parent.numChildren - 1 : currentTopIndex;
-							}
-							
-							item = currentTop.parent.getChildAt(currentTopIndex);
-							snapTo = ScrollPaneConstants.SNAP_TO_TOP;
-							
-							this._postScrollFix = true;
+					snapTo = ScrollPaneConstants.SNAP_TO_RIGHT;
+				}
+			} else {
+				ease = this.settings.scrollOverDragTweenEase;
+				duration = this.settings.scrollOverDragTweenDuration;
+						
+				if (this._latestScrollDeltaY > 0) {
+					if (this._latestScrollDeltaY > this.settings.postForceMinDelta) {
+						var currentTop:DisplayObject = this.firstPartiallyVisibleItem;
+						var currentTopIndex:int = this.getChildIndex(currentTop);
+						
+						if (currentTopIndex > 0) {
+							currentTopIndex += int(this._latestScrollDeltaY / this.settings.postForceOneItemSize);
+							currentTopIndex = currentTopIndex < 0? 0 : currentTopIndex;
+							currentTopIndex = currentTopIndex >= this.numChildren? this.numChildren - 1 : currentTopIndex;
 						}
-					} else {
-						if (this._latestScrollDeltaY < -this.settings.postForceMinDelta) {
-							var currentBottom:DisplayObject = this.latestPartiallyVisibleItem;
-							var currentBottomIndex:int = currentBottom.parent.getChildIndex(currentBottom);
-							
-							if (currentBottomIndex < currentBottom.parent.numChildren) {
-								currentBottomIndex -= int( -this._latestScrollDeltaY / this.settings.postForceOneItemSize);
-								currentBottomIndex = currentBottomIndex < 0? 0 : currentBottomIndex;
-								currentBottomIndex = currentBottomIndex >= currentBottom.parent.numChildren? currentBottom.parent.numChildren - 1 : currentBottomIndex;
-							}
-							
-							item = currentBottom.parent.getChildAt(currentBottomIndex);
-							snapTo = ScrollPaneConstants.SNAP_TO_BOTTOM;
-							
-							this._postScrollFix = true;
+						
+						item = this.getChildAt(currentTopIndex);
+						snapTo = ScrollPaneConstants.SNAP_TO_TOP;
+						
+						this._postScrollFix = true;
+					}
+				} else if (this._latestScrollDeltaY < 0) {
+					if (this._latestScrollDeltaY < -this.settings.postForceMinDelta) {
+						var currentBottom:DisplayObject = this.latestPartiallyVisibleItem;
+						var currentBottomIndex:int = this.getChildIndex(currentBottom);
+						
+						if (currentBottomIndex < this.numChildren) {
+							currentBottomIndex -= int( -this._latestScrollDeltaY / this.settings.postForceOneItemSize);
+							currentBottomIndex = currentBottomIndex < 0? 0 : currentBottomIndex;
+							currentBottomIndex = currentBottomIndex >= this.numChildren? this.numChildren - 1 : currentBottomIndex;
 						}
+						
+						item = this.getChildAt(currentBottomIndex);
+						snapTo = ScrollPaneConstants.SNAP_TO_BOTTOM;
+						
+						this._postScrollFix = true;
 					}
 				}
+				
 			}
 			
 			if (item) {
@@ -793,9 +803,12 @@ package org.ranapat.scrollpane {
 			this._control.x = 0;
 			this._control.y = 0;
 			
-			this._content.mask = this._mask;
-			//this._mask.alpha = .4;
-			//this._mask.mouseEnabled = false;
+			if (!ScrollPane.DEBUG_MODE) {
+				this._content.mask = this._mask;
+			} else {
+				this._mask.alpha = .4;
+				this._mask.mouseEnabled = false;
+			}
 			
 			this.updateSize();
 			
@@ -906,6 +919,8 @@ package org.ranapat.scrollpane {
 						this._scrollDirectionX = ScrollPaneConstants.DIRECTION_RIGHT;
 					}
 					this._latestScrollDeltaX = deltaX;
+				} else {
+					this._scrollDirectionX = ScrollPaneConstants.DIRECTION_NONE;
 				}
 				if (!this.settings.scrollLockY) {
 					this.scrollY += deltaY;
@@ -915,6 +930,8 @@ package org.ranapat.scrollpane {
 						this._scrollDirectionY = ScrollPaneConstants.DIRECTION_DOWN;
 					}
 					this._latestScrollDeltaY = deltaY;
+				} else {
+					this._scrollDirectionY = ScrollPaneConstants.DIRECTION_NONE;
 				}
 				
 				this.updateScrollBars();

@@ -89,17 +89,17 @@ package org.ranapat.scrollpane.examples {
 			*/
 			
 			//var scrollPane:ScrollPane = new ScrollPane(ScrollPaneConstants.APPEND_MODE_FREE);
-			//var scrollPane:ScrollPane = new ScrollPane(ScrollPaneConstants.APPEND_MODE_ROW, 5);
-			var scrollPane:ScrollPane = new ScrollPane(ScrollPaneConstants.APPEND_MODE_COLUMN, 5);
+			var scrollPane:ScrollPane = new ScrollPane(ScrollPaneConstants.APPEND_MODE_ROW, 6);
+			//var scrollPane:ScrollPane = new ScrollPane(ScrollPaneConstants.APPEND_MODE_COLUMN, 6);
 			
 			scrollPane.x = 150;
 			scrollPane.y = 150;
-			scrollPane.width = 520;
+			scrollPane.width = 550;
 			scrollPane.height = 300;
 			addChild(scrollPane);
 			
 			var something:Vector.<Sprite> = new Vector.<Sprite>();
-			for (var i:uint = 0; i < 60; ++i) {
+			for (var i:uint = 0; i < 200; ++i) {
 				var s:Sprite = new Sprite();
 					
 				s.graphics.beginFill(Math.random() * 0xffffff, 1);
