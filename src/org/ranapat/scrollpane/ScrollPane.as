@@ -8,7 +8,7 @@ package org.ranapat.scrollpane {
 	import flash.geom.Point;
 	
 	public class ScrollPane extends Sprite {
-		private static const DEBUG_MODE:Boolean = true;
+		private static const DEBUG_MODE:Boolean = false;
 		
 		private var _background:Sprite;
 		private var _content:Sprite;
@@ -641,11 +641,16 @@ package org.ranapat.scrollpane {
 			} else {
 				ease = this.settings.scrollOverDragTweenEase;
 				duration = this.settings.scrollOverDragTweenDuration;
+				
+				var currentTop:DisplayObject;
+				var currentTopIndex:int;
+				var currentBottom:DisplayObject;
+				var currentBottomIndex:int;
 						
 				if (this._latestScrollDeltaY > 0) {
 					if (this._latestScrollDeltaY > this.settings.postForceMinDelta) {
-						var currentTop:DisplayObject = this.firstPartiallyVisibleItem;
-						var currentTopIndex:int = this.getChildIndex(currentTop);
+						currentTop = this.firstPartiallyVisibleItem;
+						currentTopIndex = this.getChildIndex(currentTop);
 						
 						if (currentTopIndex > 0) {
 							currentTopIndex += int(this._latestScrollDeltaY / this.settings.postForceOneItemSize);
@@ -660,8 +665,8 @@ package org.ranapat.scrollpane {
 					}
 				} else if (this._latestScrollDeltaY < 0) {
 					if (this._latestScrollDeltaY < -this.settings.postForceMinDelta) {
-						var currentBottom:DisplayObject = this.latestPartiallyVisibleItem;
-						var currentBottomIndex:int = this.getChildIndex(currentBottom);
+						currentBottom = this.latestPartiallyVisibleItem;
+						currentBottomIndex = this.getChildIndex(currentBottom);
 						
 						if (currentBottomIndex < this.numChildren) {
 							currentBottomIndex -= int( -this._latestScrollDeltaY / this.settings.postForceOneItemSize);
@@ -676,6 +681,39 @@ package org.ranapat.scrollpane {
 					}
 				}
 				
+				if (this._latestScrollDeltaX > 0) {
+					if (this._latestScrollDeltaX > this.settings.postForceMinDelta) {
+						currentTop = this.firstPartiallyVisibleItem;
+						currentTopIndex = this.getChildIndex(currentTop);
+						
+						if (currentTopIndex > 0) {
+							currentTopIndex += int(this._latestScrollDeltaX / this.settings.postForceOneItemSize);
+							currentTopIndex = currentTopIndex < 0? 0 : currentTopIndex;
+							currentTopIndex = currentTopIndex >= this.numChildren? this.numChildren - 1 : currentTopIndex;
+						}
+						
+						item = this.getChildAt(currentTopIndex);
+						snapTo = ScrollPaneConstants.SNAP_TO_LEFT;
+						
+						this._postScrollFix = true;
+					}
+				} else if (this._latestScrollDeltaX < 0) {
+					if (this._latestScrollDeltaX < -this.settings.postForceMinDelta) {
+						currentBottom = this.latestPartiallyVisibleItem;
+						currentBottomIndex = this.getChildIndex(currentBottom);
+						
+						if (currentBottomIndex < this.numChildren) {
+							currentBottomIndex -= int( -this._latestScrollDeltaX / this.settings.postForceOneItemSize);
+							currentBottomIndex = currentBottomIndex < 0? 0 : currentBottomIndex;
+							currentBottomIndex = currentBottomIndex >= this.numChildren? this.numChildren - 1 : currentBottomIndex;
+						}
+						
+						item = this.getChildAt(currentBottomIndex);
+						snapTo = ScrollPaneConstants.SNAP_TO_RIGHT;
+						
+						this._postScrollFix = true;
+					}
+				}
 			}
 			
 			if (item) {

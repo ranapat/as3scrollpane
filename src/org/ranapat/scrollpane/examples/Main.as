@@ -89,8 +89,8 @@ package org.ranapat.scrollpane.examples {
 			*/
 			
 			//var scrollPane:ScrollPane = new ScrollPane(ScrollPaneConstants.APPEND_MODE_FREE);
-			var scrollPane:ScrollPane = new ScrollPane(ScrollPaneConstants.APPEND_MODE_ROW, 6);
-			//var scrollPane:ScrollPane = new ScrollPane(ScrollPaneConstants.APPEND_MODE_COLUMN, 6);
+			//var scrollPane:ScrollPane = new ScrollPane(ScrollPaneConstants.APPEND_MODE_ROW, 6);
+			var scrollPane:ScrollPane = new ScrollPane(ScrollPaneConstants.APPEND_MODE_COLUMN, 6);
 			
 			scrollPane.x = 150;
 			scrollPane.y = 150;
