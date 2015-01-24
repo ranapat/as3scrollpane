@@ -1,4 +1,5 @@
 package org.ranapat.scrollpane {
+	import com.greensock.easing.Ease;
 	import com.greensock.easing.Linear;
 	import com.greensock.TweenLite;
 	import flash.display.DisplayObject;
@@ -315,7 +316,7 @@ package org.ranapat.scrollpane {
 			);
 		}
 		
-		public function focus(item:DisplayObject, ease:Function = null, duration:Number = Number.NaN, easeParams:Array = null):void {
+		public function focus(item:DisplayObject, ease:Ease = null, duration:Number = Number.NaN, easeParams:Array = null):void {
 			if (this._items.indexOf(item) >= 0) {
 				if (!this.isItemFullyVisibile(item)) {
 					var deltaX:Number = 0;
@@ -350,7 +351,7 @@ package org.ranapat.scrollpane {
 			}
 		}
 		
-		public function snap(item:DisplayObject, mode:uint, ease:Function = null, duration:Number = Number.NaN, easeParams:Array = null):void {
+		public function snap(item:DisplayObject, mode:uint, ease:Ease = null, duration:Number = Number.NaN, easeParams:Array = null):void {
 			if (this._items.indexOf(item) >= 0) {
 				var params:Object = {
 					x: Number.NaN,
@@ -386,7 +387,7 @@ package org.ranapat.scrollpane {
 			}
 		}
 		
-		public function scroll(items:int, ease:Function = null, duration:Number = Number.NaN, easeParams:Array = null):void {
+		public function scroll(items:int, ease:Ease = null, duration:Number = Number.NaN, easeParams:Array = null):void {
 			var scrollTo:uint;
 			if (items >= 0) {
 				var latestItem:DisplayObject = this.latestFullyVisibleItem;
@@ -603,7 +604,7 @@ package org.ranapat.scrollpane {
 		private function revalidateList(istantMode:Boolean = false):void {
 			var item:DisplayObject;
 			var snapTo:uint;
-			var ease:Function = istantMode? null : this.settings.scrollAutoFocusTweenEase;
+			var ease:Ease = istantMode? null : this.settings.scrollAutoFocusTweenEase;
 			var duration:Number = istantMode? null : this.settings.scrollAutoFocusTweenDuration;
 			
 			if (this._content.y > 0) {

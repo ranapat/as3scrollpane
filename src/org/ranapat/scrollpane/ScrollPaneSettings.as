@@ -1,4 +1,5 @@
 package org.ranapat.scrollpane {
+	import com.greensock.easing.Ease;
 	import com.greensock.easing.Elastic;
 	import com.greensock.easing.Linear;
 	
@@ -13,13 +14,13 @@ package org.ranapat.scrollpane {
 		public static var X_SPACE_BETWEEN_ITEMS:Number = 0;
 		public static var Y_SPACE_BETWEEN_ITEMS:Number = 0;
 
-		public static var DEFAULT_TWEEN_EASE:Function = Linear.easeNone;
+		public static var DEFAULT_TWEEN_EASE:Ease = Linear.easeNone;
 		public static var DEFAULT_TWEEN_DURATION:Number = .1;
 
-		public static var SCROLL_AUTO_FOCUS_TWEEN_EASE:Function = Elastic.easeOut;
+		public static var SCROLL_AUTO_FOCUS_TWEEN_EASE:Ease = Elastic.easeOut;
 		public static var SCROLL_AUTO_FOCUS_TWEEN_DURATION:Number = 1.3;
 		
-		public static var SCROLL_OVER_DRAG_TWEEN_EASE:Function = Linear.easeOut;
+		public static var SCROLL_OVER_DRAG_TWEEN_EASE:Ease = Linear.easeOut;
 		public static var SCROLL_OVER_DRAG_TWEEN_DURATION:Number = .3;
 		
 		public static var QUEUE_TWEENS:Boolean = true;
@@ -45,13 +46,13 @@ package org.ranapat.scrollpane {
 		public var xSpaceBetweenItems:Number;
 		public var ySpaceBetweenItems:Number;
 
-		public var defaultTweenEase:Function;
+		public var defaultTweenEase:Ease;
 		public var defaultTweenDuration:Number;
 
-		public var scrollAutoFocusTweenEase:Function;
+		public var scrollAutoFocusTweenEase:Ease;
 		public var scrollAutoFocusTweenDuration:Number;
 		
-		public var scrollOverDragTweenEase:Function;
+		public var scrollOverDragTweenEase:Ease;
 		public var scrollOverDragTweenDuration:Number;
 		
 		public var queueTweens:Boolean;
