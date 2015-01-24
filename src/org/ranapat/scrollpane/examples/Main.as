@@ -7,22 +7,33 @@ package org.ranapat.scrollpane.examples {
 	import flash.display.Shape;
 	import flash.display.SimpleButton;
 	import flash.display.Sprite;
+	import flash.display.StageDisplayState;
+	import flash.display.StageScaleMode;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
+	import flash.geom.Rectangle;
 	import flash.text.TextField;
 	import flash.text.TextFormat;
 	import flash.text.TextFormatAlign;
+	import net.hires.debug.Stats;
 	import org.ranapat.scrollpane.ScrollBar;
 	import org.ranapat.scrollpane.ScrollBarConstants;
 	import org.ranapat.scrollpane.ScrollPane;
 	import org.ranapat.scrollpane.ScrollPaneConstants;
 	import org.ranapat.scrollpane.ScrollPaneSettings;
 	
+	[SWF(width="1920", height="1200", backgroundColor="0x000000", frameRate="60")]
 	public class Main extends Sprite {
 		
 		public function Main():void {
 			if (stage) init();
 			else addEventListener(Event.ADDED_TO_STAGE, init);
+			
+			addChild(new Stats());
+			
+			stage.fullScreenSourceRect = new Rectangle(0,0,1920,1200); 
+			stage.displayState = StageDisplayState.FULL_SCREEN; 	
+			stage.scaleMode = StageScaleMode.NO_SCALE;
 		}
 		
 		private function init(e:Event = null):void {

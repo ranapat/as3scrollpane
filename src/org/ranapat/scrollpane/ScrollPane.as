@@ -9,7 +9,7 @@ package org.ranapat.scrollpane {
 	import flash.geom.Point;
 	
 	public class ScrollPane extends Sprite {
-		private static const DEBUG_MODE:Boolean = false;
+		private static const DEBUG_MODE:Boolean = true;
 		
 		private var _background:Sprite;
 		private var _content:Sprite;
