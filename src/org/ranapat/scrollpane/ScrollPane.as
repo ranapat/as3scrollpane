@@ -43,6 +43,8 @@ package org.ranapat.scrollpane {
 		private var mode:uint;
 		private var breakAt:uint;
 		
+		private var dragScroll:Boolean;
+		
 		public var settings:ScrollPaneSettings;
 		
 		public function ScrollPane(_mode:uint = ScrollPaneConstants.APPEND_MODE_FREE, _breakAt:uint = 1, _settings:ScrollPaneSettings = null) {
@@ -92,16 +94,15 @@ package org.ranapat.scrollpane {
 		}
 		
 		override public function addChild(item:DisplayObject):DisplayObject {
-			this.displayAllItems();
+			this._totalWidth = Math.max(this._content.width, item.x + item.width);
+			this._totalHeight = Math.max(this._content.height, item.y + item.height);
 			
-			this._content.addChild(item);
-			this._totalWidth = this._content.width;
-			this._totalHeight = this._content.height;
+			item.cacheAsBitmap = true;
 			
 			this._items[this._items.length] = item;
 			++this._numChildren;
 			
-			this.invalidateDisplayList();
+			this.updateItemsInContentContainer();
 			this.updateScrollBars();
 			
 			return item;
@@ -167,16 +168,14 @@ package org.ranapat.scrollpane {
 				this._items.splice(index, 1);
 				--this._numChildren;
 				
-				this.displayAllItems();
-				
 				this._totalWidth = this._content.width;
 				this._totalHeight = this._content.height;
 
-				this.invalidateDisplayList();
+				this.updateItemsInContentContainer();
 				this.updateScrollBars();
 			}
 
-			this.revalidateList(this._removeAllChildren? true : false);
+			this.ensureScrollOffsets(this._removeAllChildren? true : false);
 			
 			return item;
 		}
@@ -241,7 +240,7 @@ package org.ranapat.scrollpane {
 		public function set scrollX(value:Number):void {
 			this._content.x = -value;
 			
-			this.invalidateDisplayList();
+			this.updateItemsInContentContainer();
 		}
 		
 		public function get scrollX():Number {
@@ -265,7 +264,7 @@ package org.ranapat.scrollpane {
 		public function set scrollY(value:Number):void {
 			this._content.y = -value;
 			
-			this.invalidateDisplayList();
+			this.updateItemsInContentContainer();
 		}
 		
 		public function get scrollY():Number {
@@ -295,7 +294,7 @@ package org.ranapat.scrollpane {
 					x: this._content.x + value,
 					ease: ease != null? ease : Linear.easeNone,
 					easeParams: easeParams,
-					onUpdate: this.invalidateDisplayList,
+					onUpdate: this.updateItemsInContentContainer,
 					onComplete: this.handleTweenComplete
 				}
 			);
@@ -310,7 +309,7 @@ package org.ranapat.scrollpane {
 					y: this._content.y + value,
 					ease: ease != null? ease : Linear.easeNone,
 					easeParams: easeParams,
-					onUpdate: this.invalidateDisplayList,
+					onUpdate: this.updateItemsInContentContainer,
 					onComplete: this.handleTweenComplete
 				}
 			);
@@ -343,7 +342,7 @@ package org.ranapat.scrollpane {
 							y: this._content.y + deltaY,
 							ease: ease != null? ease : settings.defaultTweenEase,
 							easeParams: easeParams,
-							onUpdate: this.invalidateDisplayList,
+							onUpdate: this.updateItemsInContentContainer,
 							onComplete: this.handleTweenComplete
 						}
 					);
@@ -358,7 +357,7 @@ package org.ranapat.scrollpane {
 					y: Number.NaN,
 					ease: ease != null? ease : Linear.easeNone,
 					easeParams: easeParams,
-					onUpdate: this.invalidateDisplayList,
+					onUpdate: this.updateItemsInContentContainer,
 					onComplete: this.handleTweenComplete
 				};
 				
@@ -408,8 +407,9 @@ package org.ranapat.scrollpane {
 			this._scrollDirectionX = scrollDirectionX;
 			this._scrollDirectionY = scrollDirectionY;
 			
-			this.revalidateList();
+			this.updateItemsInContentContainer();
 			this.updateScrollBars();
+			this.ensureScrollOffsets();
 		}
 		
 		public function addScrollBar(scrollBar:ScrollBar):void {
@@ -459,7 +459,6 @@ package org.ranapat.scrollpane {
 						scrollBar.visible = false;
 					}
 				}
-				
 			}
 		}
 		
@@ -566,11 +565,11 @@ package org.ranapat.scrollpane {
 		}
 		
 		private function ensureOffsetToApply(x:Number = Number.NaN, y:Number = Number.NaN):void {
-			if (_offsetToApply) {
+			if (this._offsetToApply) {
 				TweenLite.killTweensOf(this._content);
 				if (settings.queueTweens) {
-					if (!isNaN(_offsetToApply.x)) {
-						_content.x = _offsetToApply.x;
+					if (!isNaN(this._offsetToApply.x)) {
+						_content.x = this._offsetToApply.x;
 					}
 					if (!isNaN(this._offsetToApply.y)) {
 						this._content.y = this._offsetToApply.y;
@@ -601,7 +600,7 @@ package org.ranapat.scrollpane {
 			return null;
 		}
 		
-		private function revalidateList(istantMode:Boolean = false):void {
+		private function ensureScrollOffsets(istantMode:Boolean = false):void {
 			var item:DisplayObject;
 			var snapTo:uint;
 			var ease:Ease = istantMode? null : this.settings.scrollAutoFocusTweenEase;
@@ -729,23 +728,13 @@ package org.ranapat.scrollpane {
 		}
 		
 		private function dragScrollEnabled():void {
-			if (!this._control.parent) {
-				super.addChild(this._control);
-				
-				this._control.addEventListener(MouseEvent.MOUSE_DOWN, this.handleControlMouseDown, false, 0, true);
-				this._control.stage.addEventListener(MouseEvent.MOUSE_UP, this.handleControlMouseUp, false, 0, true);
-				this._control.addEventListener(MouseEvent.MOUSE_MOVE, this.handleControlMouseMove, false, 0, true);
-			}
+			this._control.mouseEnabled = true;
+			this.dragScroll = true;
 		}
 		
 		private function dragScrollDisabled():void {
-			if (this._control.parent) {
-				this._control.removeEventListener(MouseEvent.MOUSE_DOWN, this.handleControlMouseDown);
-				this._control.stage.removeEventListener(MouseEvent.MOUSE_UP, this.handleControlMouseUp);
-				this._control.removeEventListener(MouseEvent.MOUSE_MOVE, this.handleControlMouseMove);
-				
-				super.removeChild(this._control);
-			}
+			this._control.mouseEnabled = false;
+			this.dragScroll = false;
 		}
 		
 		private function displayAllItems():void {
@@ -761,7 +750,7 @@ package org.ranapat.scrollpane {
 			}
 		}
 		
-		private function invalidateDisplayList():void {
+		private function updateItemsInContentContainer():void {
 			var length:uint = this.numChildren;
 			var item:DisplayObject;
 			
@@ -772,7 +761,6 @@ package org.ranapat.scrollpane {
 			
 			for (var i:uint = 0; i < length; ++i) {
 				item = this.getChildAt(i);
-				
 				if (
 					item.y + item.height < -1 * contentY
 				) {
@@ -820,7 +808,7 @@ package org.ranapat.scrollpane {
 			this.updateScrollBars();
 			
 			if (this._postScrollFix) {
-				this.revalidateList();
+				this.ensureScrollOffsets();
 				
 				this._postScrollFix = false;
 			}
@@ -839,6 +827,7 @@ package org.ranapat.scrollpane {
 			
 			this._content.x = 0;
 			this._content.y = 0;
+			this._content.cacheAsBitmap = true;
 			
 			this._mask.x = 0;
 			this._mask.y = 0;
@@ -857,10 +846,17 @@ package org.ranapat.scrollpane {
 			
 			this.addEventListener(MouseEvent.MOUSE_WHEEL, this.handleMouseWheel, false, 0, true);
 			if (this.settings.dragScrollAuto) {
+				super.addChild(this._control);
+				
+				this._control.addEventListener(MouseEvent.MOUSE_DOWN, this.handleControlMouseDown, false, 0, true);
+				this._control.stage.addEventListener(MouseEvent.MOUSE_UP, this.handleControlMouseUp, false, 0, true);
+				this._control.addEventListener(MouseEvent.MOUSE_MOVE, this.handleControlMouseMove, false, 0, true);
+				
 				this.addEventListener(MouseEvent.MOUSE_DOWN, this.handlePreStageMouseDown, false, 0, true);
 				this.stage.addEventListener(MouseEvent.MOUSE_UP, this.handleStageMouseUp, false, 0, true);
 				this.stage.addEventListener(MouseEvent.MOUSE_MOVE, this.handleStageMouseMove, false, 0, true);
 			}
+			this.dragScrollDisabled();
 		}
 		
 		private function handleRemovedFromStage(e:Event):void {
@@ -868,6 +864,12 @@ package org.ranapat.scrollpane {
 			
 			this.removeEventListener(MouseEvent.MOUSE_WHEEL, this.handleMouseWheel);
 			if (this.settings.dragScrollAuto) {
+				this._control.removeEventListener(MouseEvent.MOUSE_DOWN, this.handleControlMouseDown);
+				this._control.stage.removeEventListener(MouseEvent.MOUSE_UP, this.handleControlMouseUp);
+				this._control.removeEventListener(MouseEvent.MOUSE_MOVE, this.handleControlMouseMove);
+				
+				super.removeChild(this._control);
+				
 				this.removeEventListener(MouseEvent.MOUSE_DOWN, this.handlePreStageMouseDown);
 				this.stage.removeEventListener(MouseEvent.MOUSE_UP, this.handleStageMouseUp);
 				this.stage.removeEventListener(MouseEvent.MOUSE_MOVE, this.handleStageMouseMove);
@@ -886,7 +888,7 @@ package org.ranapat.scrollpane {
 			this._mouseDownMode = false;
 			this._mouseMovedMode = false;
 			
-			this.revalidateList(true);
+			this.ensureScrollOffsets(true);
 			this.updateScrollBars();
 		}
 		
@@ -919,7 +921,7 @@ package org.ranapat.scrollpane {
 		
 		private function handleControlMouseUp(e:MouseEvent):void {
 			if (this._mouseDownMode) {
-				this.revalidateList();
+				this.ensureScrollOffsets();
 			}
 			
 			this.updateScrollBars();

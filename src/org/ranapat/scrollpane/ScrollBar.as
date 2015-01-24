@@ -50,7 +50,9 @@ package org.ranapat.scrollpane {
 		public function set offset(value:Number):void {
 			this._offset = value;
 			
-			this.redraw();
+			if (this.allowUIUpdateComplete) {
+				this.reposition();
+			}
 		}
 		
 		public function get offset():Number {
@@ -64,8 +66,8 @@ package org.ranapat.scrollpane {
 			}
 			this._percents = value;
 			
-			if (toRedraw) {
-				this.redraw();
+			if (toRedraw && this.allowUIUpdateComplete) {
+				this.redrawAssets();
 			}
 		}
 		
@@ -153,6 +155,19 @@ package org.ranapat.scrollpane {
 		
 		protected function get usefulHeight():Number {
 			return this.height - this._partA.height - this._partB.height - this._partC.height;
+		}
+		
+		protected function get allowUIUpdateComplete():Boolean {
+			if (
+				!isNaN(this.width) && !isNaN(this.height)
+				&& (this._mode == ScrollBarConstants.MODE_HORIZONTAL || this._mode == ScrollBarConstants.MODE_VERTICAL)
+				&& this._percents > 0 && this._percents <= 100
+				&& this._offset >= 0 && this._offset <= 100
+			) {
+				return true;
+			} else {
+				return false;
+			}
 		}
 		
 		protected function addScrollComponentEventListeners(element:DisplayObject):void {

@@ -22,7 +22,7 @@ package org.ranapat.scrollpane.examples {
 	import org.ranapat.scrollpane.ScrollPaneConstants;
 	import org.ranapat.scrollpane.ScrollPaneSettings;
 	
-	[SWF(width="1920", height="1200", backgroundColor="0x000000", frameRate="60")]
+	//[SWF(width="1920", height="1200", backgroundColor="0x000000", frameRate="60")]
 	public class Main extends Sprite {
 		
 		public function Main():void {
@@ -31,9 +31,11 @@ package org.ranapat.scrollpane.examples {
 			
 			addChild(new Stats());
 			
+			/*
 			stage.fullScreenSourceRect = new Rectangle(0,0,1920,1200); 
 			stage.displayState = StageDisplayState.FULL_SCREEN; 	
 			stage.scaleMode = StageScaleMode.NO_SCALE;
+			*/
 		}
 		
 		private function init(e:Event = null):void {
@@ -109,8 +111,9 @@ package org.ranapat.scrollpane.examples {
 			scrollPane.height = 300;
 			addChild(scrollPane);
 			
+			var i:uint;
 			var something:Vector.<Sprite> = new Vector.<Sprite>();
-			for (var i:uint = 0; i < 200; ++i) {
+			for (i = 0; i < 100; ++i) {
 				var s:Sprite = new Sprite();
 					
 				s.graphics.beginFill(Math.random() * 0xffffff, 1);
@@ -257,6 +260,12 @@ package org.ranapat.scrollpane.examples {
 				//TweenLite.delayedCall(0, scrollPane.appendChild, [ ss ]);
 				scrollPane.appendChild(ss);
 			}
+			
+			/*
+			for (i = 0; i < 90; ++i) {
+				scrollPane.removeChildAt(0);
+			}
+			*/
 			
 			//scrollPane.focus(scrollPane.getChildAt(150));
 			
