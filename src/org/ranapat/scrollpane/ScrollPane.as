@@ -427,7 +427,7 @@ package org.ranapat.scrollpane {
 		}
 		
 		protected function redrawAssets():void {
-			this._background.graphics.beginFill(0xff00ff, 1);
+			this._background.graphics.beginFill(0xff00ff, ScrollPane.DEBUG_MODE? 1 : 0);
 			this._background.graphics.drawRect(0, 0, this.width, this.height);
 			this._background.graphics.endFill();
 		}
