@@ -13,14 +13,14 @@ package org.ranapat.scrollpane {
 		private var _width:Number;
 		private var _height:Number;
 		
-		private var _partA:Sprite;
-		private var _partB:Sprite;
-		private var _partC:Sprite;
-		
 		private var _mouseDownMode:Boolean;
 		private var _mouseMoved:Boolean;
 		private var _modeDirectionIncrease:Boolean;
 		private var _latestMouseDownPoint:Point;
+		
+		protected var _partA:DisplayObject;
+		protected var _partB:DisplayObject;
+		protected var _partC:DisplayObject;
 		
 		public var scrollPane:ScrollPane;
 		
@@ -77,9 +77,11 @@ package org.ranapat.scrollpane {
 		
 		public function redraw():void {
 			if (!isNaN(this.width) && !isNaN(this.height)) {
+				/*
 				this.graphics.beginFill(0xff00ff, 1);
 				this.graphics.drawRect(0, 0, this.width, this.height);
 				this.graphics.endFill();				
+				*/
 				
 				if (
 					(this._mode == ScrollBarConstants.MODE_HORIZONTAL || this._mode == ScrollBarConstants.MODE_VERTICAL)
@@ -113,6 +115,7 @@ package org.ranapat.scrollpane {
 		}
 		
 		protected function redrawAssets():void {
+			/*
 			this._partA.graphics.beginFill(0x0000ff, .7);
 			this._partA.graphics.drawRect(0, 0, this.partAWidth, this.partAHeight);
 			this._partA.graphics.endFill();
@@ -126,6 +129,7 @@ package org.ranapat.scrollpane {
 			this._partC.graphics.beginFill(0x00ff00, .7);
 			this._partC.graphics.drawRect(0, 0, this.partCWidth, this.partCHeight);
 			this._partC.graphics.endFill();
+			*/
 			
 			this._partA.width = this.partAWidth;
 			this._partA.height = this.partAHeight;
@@ -218,9 +222,11 @@ package org.ranapat.scrollpane {
 			this.addScrollComponentEventListeners(this._partB);
 			this.addScrollComponentEventListeners(this._partC);
 			
+			/*
 			this._partA.buttonMode = true;
 			this._partB.buttonMode = true;
 			this._partC.buttonMode = true;
+			*/
 		}
 		
 		private function handleRemovedFromStage(e:Event):void {
