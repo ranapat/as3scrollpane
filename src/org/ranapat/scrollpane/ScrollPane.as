@@ -168,9 +168,12 @@ package org.ranapat.scrollpane {
 				this._items.splice(index, 1);
 				--this._numChildren;
 				
-				this._totalWidth = this._content.width;
-				this._totalHeight = this._content.height;
-
+				var lastItem:DisplayObject = this.getChildAt(this.numChildren - 1);
+				if (lastItem) {
+					this._totalWidth = lastItem.x + lastItem.width;
+					this._totalHeight = lastItem.y + lastItem.height;
+				}
+				
 				this.updateItemsInContentContainer();
 				this.updateScrollBars();
 			}
