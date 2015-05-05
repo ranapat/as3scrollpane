@@ -77,11 +77,7 @@ package org.ranapat.scrollpane {
 		
 		public function redraw():void {
 			if (!isNaN(this.width) && !isNaN(this.height)) {
-				/*
-				this.graphics.beginFill(0xff00ff, 1);
-				this.graphics.drawRect(0, 0, this.width, this.height);
-				this.graphics.endFill();				
-				*/
+				this.redrawBackground();
 				
 				if (
 					(this._mode == ScrollBarConstants.MODE_HORIZONTAL || this._mode == ScrollBarConstants.MODE_VERTICAL)
@@ -112,6 +108,14 @@ package org.ranapat.scrollpane {
 		
 		override public function get height():Number {
 			return this._height;
+		}
+		
+		protected function redrawBackground():void {
+			/*
+			this.graphics.beginFill(0xff00ff, 1);
+			this.graphics.drawRect(0, 0, this.width, this.height);
+			this.graphics.endFill();				
+			*/
 		}
 		
 		protected function redrawAssets():void {
