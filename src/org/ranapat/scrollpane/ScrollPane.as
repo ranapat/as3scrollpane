@@ -458,7 +458,7 @@ package org.ranapat.scrollpane {
 				scrollBar.visible = true;
 				
 				if (this.settings.autoHideScrollBarsOnFullBar) {
-					if (scrollBar.offset == 0 && scrollBar.percents == 100) {
+					if (scrollBar.offset == 0 && (scrollBar.percents == 0 || scrollBar.percents == 100)) {
 						scrollBar.visible = false;
 					}
 				}
