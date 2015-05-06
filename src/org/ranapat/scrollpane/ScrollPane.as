@@ -7,6 +7,7 @@ package org.ranapat.scrollpane {
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
+	import flash.geom.Rectangle;
 	
 	public class ScrollPane extends Sprite {
 		public static var DEBUG_MODE:Boolean = false;
@@ -564,6 +565,8 @@ package org.ranapat.scrollpane {
 				this._content.height = this.height;
 				this._mask.height = this.height;
 				this._control.height = this.height;
+				
+				this.scrollRect = new Rectangle(0, 0, this.width, this.height);
 			}
 		}
 		
@@ -824,6 +827,8 @@ package org.ranapat.scrollpane {
 			super.addChild(this._background);
 			super.addChild(this._content);
 			super.addChild(this._mask);
+			
+			this.cacheAsBitmap = true;
 			
 			this._background.x = 0;
 			this._background.y = 0;
