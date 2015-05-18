@@ -98,7 +98,7 @@ package org.ranapat.scrollpane {
 			this._totalWidth = Math.max(this._content.width, item.x + item.width);
 			this._totalHeight = Math.max(this._content.height, item.y + item.height);
 			
-			item.cacheAsBitmap = true;
+			//item.cacheAsBitmap = true;
 			
 			this._items[this._items.length] = item;
 			++this._numChildren;
@@ -835,7 +835,7 @@ package org.ranapat.scrollpane {
 			
 			this._content.x = 0;
 			this._content.y = 0;
-			this._content.cacheAsBitmap = true;
+			//this._content.cacheAsBitmap = true;
 			
 			this._mask.x = 0;
 			this._mask.y = 0;
