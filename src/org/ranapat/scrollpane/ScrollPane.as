@@ -289,6 +289,14 @@ package org.ranapat.scrollpane {
 			return result > 100? 100 : result;
 		}
 		
+		public function setTotalWidth(value:Number):void {
+			this._totalWidth = value;
+		}
+		
+		public function setTotalHeight(value:Number):void {
+			this._totalHeight = value;
+		}
+		
 		public function scrollXTo(value:Number, ease:Function = null, duration:Number = Number.NaN, easeParams:Array = null):void {
 			this.ensureOffsetToApply(this._content.x + value, Number.NaN);
 			TweenLite.to(
@@ -615,19 +623,19 @@ package org.ranapat.scrollpane {
 			if (this._content.y > 0) {
 				item = this.firstPartiallyVisibleItem;
 				snapTo = ScrollPaneConstants.SNAP_TO_TOP;
-			} else if (this._content.y + this.totalHeight < this.height && this.totalHeight > this.height) {
+			} else if (int(this._content.y + this.totalHeight) < int(this.height) && this.totalHeight > this.height) {
 				item = this.latestPartiallyVisibleItem;
 				snapTo = ScrollPaneConstants.SNAP_TO_BOTTOM;
-			} else if (this._content.y + this.totalHeight < this.height && this.totalHeight <= this.height) {
+			} else if (int(this._content.y + this.totalHeight) < int(this.height) && this.totalHeight <= this.height) {
 				item = this.numChildren > 0? this.getChildAt(0) : null
 				snapTo = ScrollPaneConstants.SNAP_TO_TOP;
 			} else if (this._content.x > 0) {
 				item = this.firstPartiallyVisibleItem;
 				snapTo = ScrollPaneConstants.SNAP_TO_LEFT;
-			} else if (this._content.x + this.totalWidth < this.width && this.totalWidth > this.width) {
+			} else if (int(this._content.x + this.totalWidth) < int(this.width) && this.totalWidth > this.width) {
 				item = this.latestPartiallyVisibleItem;
 				snapTo = ScrollPaneConstants.SNAP_TO_RIGHT;
-			} else if (this._content.x + this.totalWidth < this.width && this.totalWidth <= this.width) {
+			} else if (int(this._content.x + this.totalWidth) < int(this.width) && this.totalWidth <= this.width) {
 				item = this.numChildren > 0? this.getChildAt(0) : null
 				snapTo = ScrollPaneConstants.SNAP_TO_LEFT;
 			} else if (this._scrollDirectionY != ScrollPaneConstants.DIRECTION_NONE && this.totalHeight > this.height && this.numChildren > 1 && this.settings.scrollSnapToItems) {
