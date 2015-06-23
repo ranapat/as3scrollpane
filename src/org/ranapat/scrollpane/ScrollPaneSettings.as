@@ -36,6 +36,8 @@ package org.ranapat.scrollpane {
 		public static var AUTO_HIDE_SCROLL_BAR_ON_FULL_BAR:Boolean = true;
 		public static var AUTO_HIDE_SCROLL_BARS_ON_TIMEOUT:Boolean = true;
 		
+		public static var SMART_UPDATE_ITEMS:Boolean = true;
+		
 		public var paddingTop:Number;
 		public var paddingRight:Number;
 		public var paddingBottom:Number;
@@ -69,6 +71,8 @@ package org.ranapat.scrollpane {
 		public var autoHideScrollBarsOnFullBar:Boolean;
 		public var autoHideScrollBarsOnTimeout:Boolean;
 		
+		public var smartUpdateItems:Boolean;
+		
 		public function ScrollPaneSettings() {
 			this.paddingTop = ScrollPaneSettings.PADDING_TOP;
 			this.paddingRight = ScrollPaneSettings.PADDING_RIGHT;
@@ -101,6 +105,8 @@ package org.ranapat.scrollpane {
 			
 			this.autoHideScrollBarsOnFullBar = ScrollPaneSettings.AUTO_HIDE_SCROLL_BAR_ON_FULL_BAR;
 			this.autoHideScrollBarsOnTimeout = ScrollPaneSettings.AUTO_HIDE_SCROLL_BARS_ON_TIMEOUT;
+			
+			this.smartUpdateItems = ScrollPaneSettings.SMART_UPDATE_ITEMS;
 		}
 	}
 

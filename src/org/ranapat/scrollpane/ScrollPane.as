@@ -775,40 +775,43 @@ package org.ranapat.scrollpane {
 			
 			for (var i:uint = 0; i < length; ++i) {
 				item = this.getChildAt(i);
-				if (
-					item.y + item.height < -1 * contentY
-				) {
-					if (item.parent) {
-						this._content.removeChild(item);
-					}
-					continue;
-				} else if (
-					item.y > -1 * contentY + contentHeight
-				) {
-					if (item.parent) {
-						this._content.removeChild(item);
-					}
-					continue;
-				} else {
-					//
-				}
 				
-				if (
-					item.x + item.width < -1 * contentX
-				) {
-					if (item.parent) {
-						this._content.removeChild(item);
+				if (this.settings.smartUpdateItems) {
+					if (
+						item.y + item.height < -1 * contentY
+					) {
+						if (item.parent) {
+							this._content.removeChild(item);
+						}
+						continue;
+					} else if (
+						item.y > -1 * contentY + contentHeight
+					) {
+						if (item.parent) {
+							this._content.removeChild(item);
+						}
+						continue;
+					} else {
+						//
 					}
-					continue;
-				} else if (
-					item.x > -1 * contentX + contentWidth
-				) {
-					if (item.parent) {
-						this._content.removeChild(item);
+					
+					if (
+						item.x + item.width < -1 * contentX
+					) {
+						if (item.parent) {
+							this._content.removeChild(item);
+						}
+						continue;
+					} else if (
+						item.x > -1 * contentX + contentWidth
+					) {
+						if (item.parent) {
+							this._content.removeChild(item);
+						}
+						continue;
+					} else {
+						//
 					}
-					continue;
-				} else {
-					//
 				}
 				
 				if (!item.parent) {
