@@ -212,7 +212,7 @@ package org.ranapat.scrollpane {
 				
 				if (this.mode == ScrollPaneConstants.APPEND_MODE_COLUMN) {
 					if (this.breakAt && this.numChildren % this.breakAt != 0) {
-						item.x = this.settings.paddingLeft + item.width * (this.numChildren % this.breakAt) +  this.settings.xSpaceBetweenItems * (this.numChildren % this.breakAt - 1);
+						item.x = this.settings.paddingLeft + item.width * (this.numChildren % this.breakAt) +  this.settings.xSpaceBetweenItems * (this.numChildren % this.breakAt);
 						item.y = prevItem.y
 					} else {
 						item.x = this.settings.paddingLeft;
@@ -221,7 +221,7 @@ package org.ranapat.scrollpane {
 				} else if (this.mode == ScrollPaneConstants.APPEND_MODE_ROW) {
 					if (this.breakAt && this.numChildren % this.breakAt != 0) {
 						item.x = prevItem.x;
-						item.y = this.settings.paddingTop + item.height * (this.numChildren % this.breakAt) + this.settings.ySpaceBetweenItems * (this.numChildren % this.breakAt - 1);
+						item.y = this.settings.paddingTop + item.height * (this.numChildren % this.breakAt) + this.settings.ySpaceBetweenItems * (this.numChildren % this.breakAt);
 					} else {
 						item.y = this.settings.paddingTop;
 						item.x = prevItem.x + prevItem.width + this.settings.xSpaceBetweenItems;
