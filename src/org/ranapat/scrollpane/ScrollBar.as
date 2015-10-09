@@ -5,6 +5,7 @@ package org.ranapat.scrollpane {
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
 	
+	[Event(name = "scrollChanged", type = "org.ranapat.scrollpane.ScrollBarEvent")]
 	public class ScrollBar extends Sprite {
 		private var _mode:uint;
 		private var _offset:Number;
@@ -287,6 +288,8 @@ package org.ranapat.scrollpane {
 					} else {
 						this.scrollPane.scrollYPercents = this.offset;
 					}
+				} else {
+					this.dispatchEvent(new ScrollBarEvent(ScrollBarEvent.SCROLL_CHANGED, this.offset));
 				}
 				
 				this._latestMouseDownPoint = point;
