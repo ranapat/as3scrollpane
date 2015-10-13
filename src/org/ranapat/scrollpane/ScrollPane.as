@@ -114,6 +114,21 @@ package org.ranapat.scrollpane {
 			return this.addChild(child);
 		}
 		
+		override public function swapChildren(child1:DisplayObject, child2:DisplayObject):void {
+			this.swapChildrenAt(this.getChildIndex(child1), this.getChildIndex(child2));
+		}
+		
+		override public function swapChildrenAt(index1:int, index2:int):void {
+			if (
+				index1 >= 0 && index1 < this._items.length
+				&& index2 >= 0 && index2 < this._items.length
+			) {
+				var tmp:DisplayObject = this._items[index1];
+				this._items[index1] = this._items[index2];
+				this._items[index2] = tmp;
+			}
+		}
+		
 		override public function removeChildren(beginIndex:int = 0, endIndex:int = 2147483647):void {
 			this._removeAllChildren = true;
 			
