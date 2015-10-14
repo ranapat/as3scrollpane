@@ -91,6 +91,10 @@ package org.ranapat.scrollpane {
 			}
 		}
 		
+		public function resetEvents():void {
+			this.handleMouseUp(null);
+		}
+		
 		override public function set width(value:Number):void {
 			this._width = value;
 			
