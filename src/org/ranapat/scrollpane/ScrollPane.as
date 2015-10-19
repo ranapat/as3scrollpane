@@ -9,6 +9,8 @@ package org.ranapat.scrollpane {
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
+	[Event(name = "scrollXChanged", type = "org.ranapat.scrollpane.ScrollPaneEvent")]
+	[Event(name = "scrollYChanged", type = "org.ranapat.scrollpane.ScrollPaneEvent")]
 	public class ScrollPane extends Sprite {
 		public static var DEBUG_MODE:Boolean = false;
 		
@@ -260,6 +262,8 @@ package org.ranapat.scrollpane {
 			this._content.x = -value;
 			
 			this.updateItemsInContentContainer();
+			
+			this.dispatchEvent(new ScrollPaneEvent(ScrollPaneEvent.SCROLL_X_CHANGED, this.scrollXPercents));
 		}
 		
 		public function get scrollX():Number {
@@ -284,6 +288,8 @@ package org.ranapat.scrollpane {
 			this._content.y = -value;
 			
 			this.updateItemsInContentContainer();
+			
+			this.dispatchEvent(new ScrollPaneEvent(ScrollPaneEvent.SCROLL_Y_CHANGED, this.scrollYPercents));
 		}
 		
 		public function get scrollY():Number {
