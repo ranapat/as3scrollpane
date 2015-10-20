@@ -48,6 +48,8 @@ package org.ranapat.scrollpane {
 		
 		private var dragScroll:Boolean;
 		
+		private var purge:Boolean;
+		
 		public var settings:ScrollPaneSettings;
 		
 		public function ScrollPane(_mode:uint = ScrollPaneConstants.APPEND_MODE_FREE, _breakAt:uint = 1, _settings:ScrollPaneSettings = null) {
@@ -166,6 +168,11 @@ package org.ranapat.scrollpane {
 			
 			if (index >= 0) {
 				if (
+					this.purge ||
+					this.mode == ScrollPaneConstants.APPEND_MODE_FREE
+				) {
+					//
+				} else if (
 					this.mode == ScrollPaneConstants.APPEND_MODE_COLUMN
 					|| this.mode == ScrollPaneConstants.APPEND_MODE_ROW
 				) {
@@ -176,8 +183,6 @@ package org.ranapat.scrollpane {
 						current.x = previous.x;
 						current.y = previous.y;
 					}
-				} else if (this.mode == ScrollPaneConstants.APPEND_MODE_FREE) {
-					//
 				}
 				
 				if (item.parent == this._content) {
@@ -207,6 +212,14 @@ package org.ranapat.scrollpane {
 		
 		override public function get numChildren():int {
 			return this._numChildren;
+		}
+		
+		public function purgeChild(item:DisplayObject):DisplayObject {
+			this.purge = true;
+			var result:DisplayObject = this.removeChild(item);
+			this.purge = false;
+			
+			return result;
 		}
 		
 		public function removeAllChildren():Vector.<DisplayObject> {
