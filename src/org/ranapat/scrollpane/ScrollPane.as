@@ -222,6 +222,29 @@ package org.ranapat.scrollpane {
 			return result;
 		}
 		
+		public function wipeChild(item:DisplayObject):DisplayObject {
+			var index:int = this._items.indexOf(item);
+			
+			if (index >= 0) {
+				if (item.parent == this._content) {
+					this._content.removeChild(item);
+				}
+				this._items.splice(index, 1);
+				--this._numChildren;
+			}
+
+			return item;
+		}
+		
+		public function insertChild(item:DisplayObject):DisplayObject {
+			this._items[this._items.length] = item;
+			++this._numChildren;
+			
+			this._content.addChild(item);
+			
+			return item;
+		}
+		
 		public function removeAllChildren():Vector.<DisplayObject> {
 			var result:Vector.<DisplayObject> = new Vector.<DisplayObject>();
 			while (this._items.length > 0) {
