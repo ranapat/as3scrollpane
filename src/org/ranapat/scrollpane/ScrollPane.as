@@ -38,6 +38,7 @@ package org.ranapat.scrollpane {
 		
 		private var _items:Vector.<DisplayObject>;
 		private var _numChildren:uint;
+		private var _reserved:uint;
 		private var _totalWidth:Number;
 		private var _totalHeight:Number;
 		
@@ -264,17 +265,17 @@ package org.ranapat.scrollpane {
 				prevItem = this.getChildAt(this.numChildren - 1);
 				
 				if (this.mode == ScrollPaneConstants.APPEND_MODE_COLUMN) {
-					if (this.breakAt && this.numChildren % this.breakAt != 0) {
-						item.x = this.settings.paddingLeft + item.width * (this.numChildren % this.breakAt) +  this.settings.xSpaceBetweenItems * (this.numChildren % this.breakAt);
+					if (this.breakAt && (this.numChildren + this.reserved) % this.breakAt != 0) {
+						item.x = this.settings.paddingLeft + item.width * ((this.numChildren + this.reserved) % this.breakAt) +  this.settings.xSpaceBetweenItems * ((this.numChildren + this.reserved) % this.breakAt);
 						item.y = prevItem.y
 					} else {
 						item.x = this.settings.paddingLeft;
 						item.y = prevItem.y + prevItem.height + this.settings.ySpaceBetweenItems;
 					}
 				} else if (this.mode == ScrollPaneConstants.APPEND_MODE_ROW) {
-					if (this.breakAt && this.numChildren % this.breakAt != 0) {
+					if (this.breakAt && (this.numChildren + this.reserved) % this.breakAt != 0) {
 						item.x = prevItem.x;
-						item.y = this.settings.paddingTop + item.height * (this.numChildren % this.breakAt) + this.settings.ySpaceBetweenItems * (this.numChildren % this.breakAt);
+						item.y = this.settings.paddingTop + item.height * ((this.numChildren + this.reserved) % this.breakAt) + this.settings.ySpaceBetweenItems * ((this.numChildren + this.reserved) % this.breakAt);
 					} else {
 						item.y = this.settings.paddingTop;
 						item.x = prevItem.x + prevItem.width + this.settings.xSpaceBetweenItems;
@@ -288,6 +289,14 @@ package org.ranapat.scrollpane {
 			this.addChild(item);
 			
 			return item;
+		}
+		
+		public function set reserved(value:uint):void {
+			this._reserved = value;
+		}
+		
+		public function get reserved():uint {
+			return this._reserved;
 		}
 		
 		public function get background():Sprite {
@@ -347,11 +356,11 @@ package org.ranapat.scrollpane {
 		}
 		
 		public function setTotalWidth(value:Number):void {
-			this._totalWidth = value;
+			this._totalWidth = value >= 0? value : (this._totalWidth + value);
 		}
 		
 		public function setTotalHeight(value:Number):void {
-			this._totalHeight = value;
+			this._totalHeight = value >= 0? value : (this._totalHeight + value);
 		}
 		
 		public function scrollXTo(value:Number, ease:Function = null, duration:Number = Number.NaN, easeParams:Array = null):void {
