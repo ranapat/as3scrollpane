@@ -1007,9 +1007,8 @@ package org.ranapat.scrollpane {
 		private function handleControlMouseUp(e:MouseEvent):void {
 			if (this._mouseDownMode) {
 				this.ensureScrollOffsets();
+				this.updateScrollBars();
 			}
-			
-			this.updateScrollBars();
 			
 			this._mouseDownMode = false;
 			this._mouseMovedMode = false;
